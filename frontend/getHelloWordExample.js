@@ -19,8 +19,12 @@ let hellowolrdContract = new Contract(HWdeployedAddr, helloworldjson.abi, signer
 //use the returned value for frontend other stuff
 (async()=>{
   var message = await hellowolrdContract.getMessage();
-  console.log(message); //should print out "hi, themis, let's go!"
+  console.log(message); //it this is first time run, should print out "hi, themis, let's go!"
+  //send tx 
+  let tx = await hellowolrdContract.update("thinking about the security...");
+  //console.log(tx);
+  var newmessage = await hellowolrdContract.getMessage();
+  console.log(newmessage);//should print out "thinking about the security..."
 })();
 
-//send tx 
-//TODO add an example that requires a tx being sent
+
