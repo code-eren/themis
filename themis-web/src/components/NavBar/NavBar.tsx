@@ -3,17 +3,29 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Link, Stack } from '@mui/material';
+import { useMoralis } from 'react-moralis';
+
 export function NavBar() {
+    const { authenticate, logout, isAuthenticated } = useMoralis();
     const routes = [
         {
-            path: "/allbets",
-            name: "All Bets"
+            path: "/matches",
+            name: "Matches"
         },
         {
             path: "/mybets",
             name: "My Bets"
         }
     ]
+    
+    const handleLogin = () => {
+        authenticate();
+    };
+
+    const handleLogout = () => {
+        logout();
+    }
+
     return (
         <AppBar position="sticky">
             <Toolbar>
@@ -33,6 +45,15 @@ export function NavBar() {
                             );
                         }
                     )
+                }
+                {
+                    !isAuthenticated ?
+                    <Typography variant="inherit" color="inherit" sx={{cursor: "pointer"}} onClick={handleLogin}>
+                        Login
+                    </Typography> :
+                    <Typography variant="inherit" color="inherit" sx={{cursor: "pointer"}} onClick={handleLogout}>
+                        Logout
+                    </Typography>
                 }
                 </Stack>
             </Toolbar>

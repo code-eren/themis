@@ -1,4 +1,4 @@
-export interface Bet {
+export interface Match {
     awayTeam: string;
     homeTeam: string;
     awayOdds: number;

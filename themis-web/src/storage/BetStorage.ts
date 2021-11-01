@@ -1,7 +1,7 @@
-import { Bet } from "../interfaces/Bet";
+import { Match } from "../interfaces/Match";
 import { BetCheckoutForm } from "../interfaces/BetCheckoutForm";
 
-export const storeBet = (bet: Bet, betCheckoutForm: BetCheckoutForm) => {
+export const storeBet = (bet: Match, betCheckoutForm: BetCheckoutForm) => {
     let matchId = JSON.stringify(bet);
     let betId = JSON.stringify(betCheckoutForm);
     let unparsedBets = localStorage.getItem(matchId);
@@ -17,7 +17,7 @@ export const storeBet = (bet: Bet, betCheckoutForm: BetCheckoutForm) => {
 };
 
 export interface BetsForMatch {
-    match: Bet;
+    match: Match;
     bets: BetCheckoutForm[];
 }
 

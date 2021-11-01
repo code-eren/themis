@@ -12,7 +12,7 @@ export function BetExecution(props: BetExecutionProp) {
         let init = 0;
         for (let i = 0; i < stringCosts.length; i++) {
             let cost = parseFloat(stringCosts[i]);
-            if (cost !== NaN && cost >= 0) {
+            if (!isNaN(cost) && cost >= 0) {
                 init += cost;
             }
         }

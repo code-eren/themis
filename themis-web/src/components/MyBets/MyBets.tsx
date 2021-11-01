@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Dialog, Paper, Typography } from '@mui/material';
+import { Container, Paper, Typography } from '@mui/material';
 import { BetsTable } from '../BetsTable/BetsTable';
 import { getBets } from '../../storage/BetStorage';
 

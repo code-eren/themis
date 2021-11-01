@@ -26,7 +26,7 @@ export function BetAmount (props: BetAmountProps) {
 
     const renderAmountWinningsMessage = (teamOdds: TeamOdds, amountAsString: string) => {
         let amountParsed = parseFloat(amountAsString);
-        if (amountParsed === NaN) {
+        if (isNaN(amountParsed)) {
             return <Typography textAlign="center">Please enter a decimal.</Typography>;
         } else if (amountParsed <= 0) {
             return <Typography textAlign="center">Only positive amounts please!</Typography>

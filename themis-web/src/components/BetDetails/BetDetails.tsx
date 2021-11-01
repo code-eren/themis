@@ -1,11 +1,11 @@
 import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
-import { Bet } from '../../interfaces/Bet';
+import { Match } from '../../interfaces/Match';
 import { TeamOdds, convertOddsToString } from '../../interfaces/TeamOdds';
 
 interface BetDetailsProps {
-    bet: Bet;
+    bet: Match;
     teamOddsSelected: TeamOdds | null;
     setTeamOddsSelected: (teamOdds: TeamOdds) => void
 }

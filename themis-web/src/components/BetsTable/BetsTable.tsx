@@ -6,18 +6,18 @@ import {
     TableBody,
     TableCell
 } from '@mui/material';
-import { Bet } from '../../interfaces/Bet';
+import { Match } from '../../interfaces/Match';
 import { BetsForMatch } from '../../storage/BetStorage';
 import { convertOddsToString } from '../../interfaces/TeamOdds';
 
 interface BetsTableProps {
-    bets?: Bet[];
+    bets?: Match[];
     enrichedBets?: BetsForMatch[];
-    setClickedBet?: (clicked: Bet) => void
+    setClickedBet?: (clicked: Match) => void
 }
 
 export function BetsTable(props: BetsTableProps) {
-    const handleTableRowClicked = (bet: Bet) => {
+    const handleTableRowClicked = (bet: Match) => {
         if (props.setClickedBet !== undefined) {
             props.setClickedBet(bet);
         } 
@@ -40,7 +40,7 @@ export function BetsTable(props: BetsTableProps) {
             <TableBody>
                 {
                     props.bets && props.bets.map((bet) => (
-                        <TableRow onClick={() => handleTableRowClicked(bet)}>
+                        <TableRow sx={{cursor: "pointer"}} hover={true} onClick={() => handleTableRowClicked(bet)}>
                             <TableCell>{bet.homeTeam}</TableCell>
                             <TableCell>{bet.awayTeam}</TableCell>
                             <TableCell>{bet.homeOdds > 0 && "+"}{bet.homeOdds}</TableCell>

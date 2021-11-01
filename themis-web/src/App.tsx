@@ -4,19 +4,20 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import { AllBets } from './components/AllBets/AllBets';
+import { AllMatches } from './components/AllMatches/AllMatches';
 import { Home } from './components/Home/Home';
 import { MyBets } from './components/MyBets/MyBets';
 import { NavBar } from './components/NavBar/NavBar';
+
 function App() {
   return (
     <Router>
       <NavBar/>
       <Switch>
-        <Route path="/allbets">
-          <AllBets/>
+        <Route path="/matches">
+          <AllMatches/>
         </Route>
-        <Route path="/mybets">
+        <Route path="/bets">
           <MyBets/>
         </Route>
         <Route path="/">

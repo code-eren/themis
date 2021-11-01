@@ -1,7 +1,7 @@
 import { Button, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-import { Bet } from "../../interfaces/Bet";
+import { Match } from "../../interfaces/Match";
 import { BetCheckoutForm } from "../../interfaces/BetCheckoutForm";
 import { TeamOdds } from "../../interfaces/TeamOdds";
 import { storeBet } from "../../storage/BetStorage";
@@ -10,7 +10,7 @@ import { BetDetails } from "../BetDetails/BetDetails";
 import { BetExecution } from "../BetExecution/BetExecution";
 
 interface BetCheckoutProps {
-    betToBuy: Bet;
+    betToBuy: Match;
 }
 
 export function BetCheckout(props: BetCheckoutProps) {
