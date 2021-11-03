@@ -10,7 +10,7 @@ const networkId = 1;
 const HWdeployedAddr = helloworldjson["networks"][networkId.toString()]["address"]
 
 //local blockchain's listernning address
-const localAddr = "http://localhost:8545";
+const localAddr = process.env.LOCALHOST;
 const testrpcprovider = new providers.JsonRpcProvider(localAddr);
 const signer = testrpcprovider.getSigner(0);
 //create contract instance

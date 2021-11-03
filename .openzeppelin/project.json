@@ -1,0 +1,18 @@
+{
+  "manifestVersion": "2.2",
+  "contracts": {},
+  "dependencies": {
+    "@openzeppelin/contracts-ethereum-package": "^3.0.0"
+  },
+  "name": "themis",
+  "version": "1.0.0",
+  "compiler": {
+    "compilerSettings": {
+      "optimizer": {}
+    },
+    "typechain": {
+      "enabled": false
+    }
+  },
+  "telemetryOptIn": true
+}
