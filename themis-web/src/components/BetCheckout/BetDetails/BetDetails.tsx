@@ -1,8 +1,8 @@
 import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
-import { Match } from '../../interfaces/Match';
-import { TeamOdds, convertOddsToString } from '../../interfaces/TeamOdds';
+import { Match } from '../../../interfaces/Match';
+import { TeamOdds, convertOddsToString } from '../../../interfaces/TeamOdds';
 
 interface BetDetailsProps {
     bet: Match;

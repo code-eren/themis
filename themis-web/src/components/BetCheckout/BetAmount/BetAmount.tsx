@@ -1,7 +1,7 @@
 import { Grid, InputAdornment, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-import { TeamOdds, convertOddsToString } from "../../interfaces/TeamOdds";
+import { TeamOdds, convertOddsToString } from "../../../interfaces/TeamOdds";
 
 interface BetAmountProps {
     teamOddsSelected: TeamOdds | null;

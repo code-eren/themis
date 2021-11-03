@@ -3,6 +3,7 @@ import { Match } from '../../interfaces/Match';
 import React from 'react';
 import { BetsTable } from '../BetsTable/BetsTable';
 import { BetCheckout } from '../BetCheckout/BetCheckout';
+import BetCheckoutContainer from '../../containers/BetCheckoutContainer';
 
 function createBet(
     awayTeam: string,
@@ -34,7 +35,7 @@ export function AllMatches() {
             </Paper>
             <Dialog onClose={() => setBetToBuy(null)} open={betToBuy !== null}>
                 {
-                    betToBuy && <BetCheckout betToBuy={betToBuy} />
+                    betToBuy && <BetCheckoutContainer />
                 }
             </Dialog>
         </Container>

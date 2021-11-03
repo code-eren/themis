@@ -1,53 +1,91 @@
-import { ActionType } from '../constants/ActionTypes';
-import { DraftedBet, SubmittedBet } from '../interfaces/BetSubmisison';
-import { Match } from '../interfaces/Match';
+import { DraftSubmissionActionType } from '../constants/ActionTypes';
+import { DraftedBet, DraftSubmissionState } from '../interfaces/BetSubmisison';
+import { StartBetSubmissionAction, SelectSideAction, EnterBidAmountAction, CancelBetSubmissionAction, SubmitBetSubmissionAction } from '../actions/index';
 
-const initialState : DraftedBet = {
-    matchID: "",
+export const initialState : DraftedBet = {
+    selectedmatchID: "",
     selectedTeamID: "",
-    bidAmount: "",
+    enteredBidAmount: "",
     error: "",
+    prevState: DraftSubmissionState.EMPTY,
 };
 
-interface Action {
-    type: ActionType;
-    matchID?: string;
-    teamID?: string;
-    amount?: string;
-}
+type DraftBetSubmissionAction =
+    StartBetSubmissionAction |
+    SelectSideAction |
+    EnterBidAmountAction |
+    CancelBetSubmissionAction |
+    SubmitBetSubmissionAction
 
-export default function betSubmission(state=initialState, action: Action): DraftedBet {
+export function betSubmission(state=initialState, action: DraftBetSubmissionAction): DraftedBet {
     switch (action.type) {
-        case ActionType.START_BET_SUBMISSION:
-            if (action.matchID === undefined || action.matchID === "") {
+        case DraftSubmissionActionType.START_BET_SUBMISSION: {
+            if (action.selectedMatchID === "") {
                 return {
                     ...state,
-                    error: "Please bet on a valid match.",
+                    error: "Please select a valid match.",
                 };
             }
-            return { ...state, error: "" };
-        case ActionType.SELECT_SIDE:
-            if (action.teamID === undefined || action.teamID === "") {
+            return {
+                ...initialState,
+                prevState: DraftSubmissionState.START,
+                selectedTeamID: action.selectedMatchID,
+                error: "",
+            };
+        }
+        case DraftSubmissionActionType.SELECT_SIDE: {
+            const validPrevStates = [DraftSubmissionState.START, DraftSubmissionState.SELECT_SIDE, DraftSubmissionState.ENTER_AMOUNT];
+            if (!validPrevStates.includes(state.prevState)) {
                 return {
                     ...state,
-                    error: "Please select a valid team."
-                }
+                    error: "Please restart the checkout process.",
+                };
+            } else if (action.selectedTeamID === "") {
+                return {
+                    ...state,
+                    error: "Please select a valid side.",
+                };
             }
-            return { ...state, selectedTeamID: action.teamID, error: "" };
-        case ActionType.ENTER_AMOUNT:
-            if (action.amount === undefined || action.amount === "") {
-                return { ...state, error: "Please enter an amount." };
-            } else if (isNaN(parseFloat(action.amount))) {
-                return { ...state, error: "Please enter a numeric quantity." };
-            } // check if user has enough
             return {
                 ...state,
-                bidAmount: action.amount ?? state.bidAmount,
+                prevState: DraftSubmissionState.SELECT_SIDE,
+                selectedTeamID: action.selectedTeamID,
+                error: "",
+            };
+        }
+        case DraftSubmissionActionType.ENTER_BID_AMOUNT: {
+            const validPrevStates = [DraftSubmissionState.SELECT_SIDE, DraftSubmissionState.ENTER_AMOUNT];
+            if (!validPrevStates.includes(state.prevState)) {
+                return {
+                    ...state,
+                    error: "Please restart the checkout process.",
+                };
+            } else if (action.enteredBidAmount === "") {
+                return {
+                    ...state,
+                    error: "Please enter a valid bid amount.",
+                };
             }
-        case ActionType.SUBMIT_BET_SUBMISSION:
-
-        case ActionType.CANCEL_BET_SUBMISSION:
-        default:
+            return {
+                ...state,
+                prevState: DraftSubmissionState.ENTER_AMOUNT,
+                enteredBidAmount: action.enteredBidAmount,
+                error: "",
+            };
+        }
+        case DraftSubmissionActionType.SUBMIT_BET_SUBMISSION: {
+            const validPrevStates = [DraftSubmissionState.ENTER_AMOUNT];
+            if (!validPrevStates.includes(state.prevState)) {
+                return {
+                    ...state,
+                    error: "Please restart the checkout process."
+                };
+            }
+            // submitDraft
             return initialState;
+        }
+        case DraftSubmissionActionType.CANCEL_BET_SUBMISSION: {
+            return initialState;
+        }
     }
 }

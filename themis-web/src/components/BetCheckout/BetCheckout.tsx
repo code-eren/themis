@@ -5,12 +5,18 @@ import { Match } from "../../interfaces/Match";
 import { BetCheckoutForm } from "../../interfaces/BetCheckoutForm";
 import { TeamOdds } from "../../interfaces/TeamOdds";
 import { storeBet } from "../../storage/BetStorage";
-import { BetAmount } from "../BetAmount/BetAmount";
-import { BetDetails } from "../BetDetails/BetDetails";
+import { BetAmount } from "./BetAmount/BetAmount";
+import { BetDetails } from "./BetDetails/BetDetails";
 import { BetExecution } from "../BetExecution/BetExecution";
+import { DraftedBet } from '../../interfaces/BetSubmisison';
+import { CancelBetSubmissionAction, EnterBidAmountAction, SelectSideAction, SubmitBetSubmissionAction } from "../../actions";
 
 interface BetCheckoutProps {
-    betToBuy: Match;
+    draftedBet: DraftedBet,
+    selectSide: (selectedTeamID: string) => SelectSideAction,
+    enterBidAmount: (enteredBidAmount: string) => EnterBidAmountAction,
+    submitBetSubmission: () => SubmitBetSubmissionAction,
+    cancelBetSubmission: () => CancelBetSubmissionAction,
 }
 
 export function BetCheckout(props: BetCheckoutProps) {
@@ -28,7 +34,7 @@ export function BetCheckout(props: BetCheckoutProps) {
     }
 
     const handleSubmit = () => {
-        storeBet(props.betToBuy, betCheckoutForm);
+        // storeBet(props.betToBuy, betCheckoutForm);
     }
     const handleSelectTeamOddsSelected = (teamOddsSelected: TeamOdds) => {
         setBetCheckoutForm((prevBetCheckoutForm: BetCheckoutForm) => {

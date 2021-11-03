@@ -1,21 +1,32 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { MoralisProvider } from 'react-moralis';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import { betSubmission, initialState } from './reducers/betSubmisison';
+import reducers from './reducers';
 
 const moralisCreds = {
   appId: "7Iy53OzFq24gwU0uVz1hHouvuutzjxzw52L5U6Jm",
   serverUrl: "https://slhgxdebn0lr.usemoralis.com:2053/server"
 };
 
-ReactDOM.render(
-  <React.StrictMode>
-    <MoralisProvider appId={moralisCreds.appId} serverUrl={moralisCreds.serverUrl}>
+const store = createStore(
+  reducers,
+  {
+    betSubmission: initialState
+  }
+);
+
+render(
+  <MoralisProvider appId={moralisCreds.appId} serverUrl={moralisCreds.serverUrl}>
+    <Provider store={store}>
       <App />
-    </MoralisProvider>
-  </React.StrictMode>,
+    </Provider>
+  </MoralisProvider>,
   document.getElementById('root')
 );
 

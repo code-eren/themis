@@ -1,7 +1,15 @@
+export enum DraftSubmissionState {
+    START = 1,
+    SELECT_SIDE = 2,
+    ENTER_AMOUNT = 3,
+    EMPTY = 4,
+}
+
 export interface DraftedBet {
-    matchID: string;
+    prevState: DraftSubmissionState;
+    selectedmatchID: string;
     selectedTeamID: string;
-    bidAmount: string;
+    enteredBidAmount: string;
     error: string;
 };
 
