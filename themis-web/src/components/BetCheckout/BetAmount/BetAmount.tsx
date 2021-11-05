@@ -31,7 +31,7 @@ export function BetAmount (props: BetAmountProps) {
         } else if (amountParsed <= 0) {
             return <Typography textAlign="center">Only positive amounts please!</Typography>
         } else {
-            let team = teamOdds.team === "Tie" ? "a tie" : teamOdds.team;
+            let team = teamOdds.team.fullName == "Tie" ? "a tie" : teamOdds.team;
             let odds = convertOddsToString(teamOdds.odds);
             let winnings = getWinnings(amountParsed, teamOdds.odds);
             console.log(winnings);

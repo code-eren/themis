@@ -1,11 +1,19 @@
 import { combineReducers } from 'redux';
-import { DraftedBet } from '../interfaces/BetSubmisison';
-import { betSubmission } from '../reducers/betSubmisison';
+import betCheckout from './BetCheckoutReducer';
+import userBets from './UserBetsReducer';
+import matches from './MatchesReducer';
+import { BetCheckoutState } from '../interfaces/BetCheckoutState';
+import { UserBetsState } from '../interfaces/UserBetsState';
+import { MatchesState } from '../interfaces/MatchesState';
 
-export interface AppState {
-    betSubmission: DraftedBet;
+export interface State {
+    betCheckout: BetCheckoutState;
+    userBets: UserBetsState;
+    matches: MatchesState;
 }
 
-export default combineReducers({
-    betSubmission,
+export default combineReducers<State>({
+    betCheckout,
+    userBets,
+    matches
 });

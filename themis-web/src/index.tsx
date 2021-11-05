@@ -6,7 +6,6 @@ import reportWebVitals from './reportWebVitals';
 import { MoralisProvider } from 'react-moralis';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import { betSubmission, initialState } from './reducers/betSubmisison';
 import reducers from './reducers';
 
 const moralisCreds = {
@@ -14,12 +13,7 @@ const moralisCreds = {
   serverUrl: "https://slhgxdebn0lr.usemoralis.com:2053/server"
 };
 
-const store = createStore(
-  reducers,
-  {
-    betSubmission: initialState
-  }
-);
+const store = createStore(reducers);
 
 render(
   <MoralisProvider appId={moralisCreds.appId} serverUrl={moralisCreds.serverUrl}>

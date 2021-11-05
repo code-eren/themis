@@ -1,8 +1,9 @@
+import { TeamOdds } from "./TeamOdds";
+
 export interface Match {
-    awayTeam: string;
-    homeTeam: string;
-    awayOdds: number;
-    homeOdds: number;
-    tieOdds: number;
-    gameStartTime: Date;
+    ID: string;
+    away: TeamOdds;
+    home: TeamOdds;
+    tie: TeamOdds;
+    startTimestamp: number;
 }

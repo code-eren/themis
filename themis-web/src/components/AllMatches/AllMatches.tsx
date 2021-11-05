@@ -1,29 +1,17 @@
 import { Container, Dialog, Paper, Typography } from '@mui/material';
 import { Match } from '../../interfaces/Match';
 import React from 'react';
-import { BetsTable } from '../BetsTable/BetsTable';
-import { BetCheckout } from '../BetCheckout/BetCheckout';
-import BetCheckoutContainer from '../../containers/BetCheckoutContainer';
+import { MatchesTable } from '../MatchesTable/MatchesTable';
+// import BetCheckoutContainer from '../../containers/BetCheckoutContainer';
+import { MatchesState } from '../../interfaces/MatchesState';
 
-function createBet(
-    awayTeam: string,
-    homeTeam: string,
-    awayOdds: number,
-    homeOdds: number,
-    tieOdds: number,
-    gameStartTime: Date
-): Match {
-    return { awayTeam, homeTeam, awayOdds, homeOdds, tieOdds, gameStartTime };
+export interface AllMatchesProps {
+    matchesState: MatchesState;
+    selectMatch: (matchID: string) => void
 }
 
-export function AllMatches() {
-    const randDate = new Date('2021-10-17');
-    const bets = [
-        createBet("Real Madrid", "Barcelona", 200, -200, 0, randDate),
-        createBet("Manchester City", "Paris Saint Germain", 200, -200, 0, randDate),
-        createBet("Arsenal", "Liverpool", 200, -200, 0, randDate),
-        createBet("Chelsea", "Bayern Munich", 200, -200, 0, randDate),
-    ];
+export function AllMatches(props: AllMatchesProps) {
+
     const [betToBuy, setBetToBuy] = React.useState<Match | null>(null);
     return (
         <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
@@ -31,12 +19,12 @@ export function AllMatches() {
                 <Typography component="h1" variant="h4" align="center">
                     Matches
                 </Typography>
-                <BetsTable bets={bets} setClickedBet={setBetToBuy} />
+                <MatchesTable matches={props.matchesState.matches} onMatchClicked={props.selectMatch} />
             </Paper>
             <Dialog onClose={() => setBetToBuy(null)} open={betToBuy !== null}>
-                {
+                {/* {
                     betToBuy && <BetCheckoutContainer />
-                }
+                } */}
             </Dialog>
         </Container>
     );

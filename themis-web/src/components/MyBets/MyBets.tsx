@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Paper, Typography } from '@mui/material';
-import { BetsTable } from '../BetsTable/BetsTable';
+// import { BetsTable } from '../MatchesTable/MatchesTable';
 import { getBets } from '../../storage/BetStorage';
 
 export function MyBets() {
@@ -11,7 +11,7 @@ export function MyBets() {
                 <Typography component="h1" variant="h4" align="center">
                     My Bets
                 </Typography>
-                <BetsTable enrichedBets={myBets} />
+                {/* <BetsTable enrichedBets={myBets} /> */}
             </Paper>
         </Container>
     );

@@ -1,5 +1,11 @@
+export interface Team {
+    ID: string;
+    fullName: string;
+    shortName: string;
+}
+
 export interface TeamOdds {
-    team: string;
+    team: Team;
     odds: number;
 }
 

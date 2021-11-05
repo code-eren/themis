@@ -4,7 +4,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import { AllMatches } from './components/AllMatches/AllMatches';
+import AllMatches from './containers/AllMatchesContainer';
 import { Home } from './components/Home/Home';
 import { MyBets } from './components/MyBets/MyBets';
 import { NavBar } from './components/NavBar/NavBar';
@@ -15,7 +15,7 @@ function App() {
       <NavBar/>
       <Switch>
         <Route path="/matches">
-          <AllMatches/>
+          <AllMatches />
         </Route>
         <Route path="/bets">
           <MyBets/>

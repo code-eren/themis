@@ -1,15 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-    selectSide,
-    enterBidAmount,
-    submitBetSubmission,
-    cancelBetSubmission
-} from '../actions/index';
+// import {
+//     selectSide,
+//     enterBidAmount,
+//     submitBetSubmission,
+//     cancelBetSubmission
+// } from '../actions/BetCheckoutActions';
 import { DraftedBet } from '../interfaces/BetSubmisison';
 import { BetCheckout } from '../components/BetCheckout/BetCheckout';
 import PropTypes from 'prop-types';
-import { AppState } from '../reducers';
+// import { AppState } from '../reducers';
 
 // const BetCheckoutContainer = ({ 
 //     draft: DraftedBet, 
@@ -27,30 +27,30 @@ import { AppState } from '../reducers';
 //     />
 // );
 
-interface State {
-    draftedBet: DraftedBet;
-    selectSide: typeof selectSide;
-    enterBidAmount: typeof enterBidAmount;
-    submitBetSubmission: typeof submitBetSubmission;
-    cancelBetSubmission: typeof cancelBetSubmission;
-}
+// interface State {
+//     draftedBet: DraftedBet;
+//     selectSide: typeof selectSide;
+//     enterBidAmount: typeof enterBidAmount;
+//     submitBetSubmission: typeof submitBetSubmission;
+//     cancelBetSubmission: typeof cancelBetSubmission;
+// }
 
-const BetCheckoutContainer = (state: State) => (
-    <BetCheckout
-        {...state}
-    />
-);
+// const BetCheckoutContainer = (state: State) => (
+//     <BetCheckout
+//         {...state}
+//     />
+// );
 
-const mapStateToProps = (state: AppState) => ({
-    draftedBet: state.betSubmission
-});
+// const mapStateToProps = (state: AppState) => ({
+//     draftedBet: state.betSubmission
+// });
 
-export default connect(
-    mapStateToProps,
-    {
-        selectSide,
-        enterBidAmount,
-        submitBetSubmission,
-        cancelBetSubmission
-    }
-)(BetCheckoutContainer);
+// export default connect(
+//     mapStateToProps,
+//     {
+//         selectSide,
+//         enterBidAmount,
+//         submitBetSubmission,
+//         cancelBetSubmission
+//     }
+// )(BetCheckoutContainer);

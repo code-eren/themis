@@ -1,22 +1,19 @@
 import { Button, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-import { Match } from "../../interfaces/Match";
 import { BetCheckoutForm } from "../../interfaces/BetCheckoutForm";
 import { TeamOdds } from "../../interfaces/TeamOdds";
-import { storeBet } from "../../storage/BetStorage";
 import { BetAmount } from "./BetAmount/BetAmount";
 import { BetDetails } from "./BetDetails/BetDetails";
 import { BetExecution } from "../BetExecution/BetExecution";
-import { DraftedBet } from '../../interfaces/BetSubmisison';
-import { CancelBetSubmissionAction, EnterBidAmountAction, SelectSideAction, SubmitBetSubmissionAction } from "../../actions";
+import { BetCheckoutState } from "../../interfaces/BetCheckoutState";
 
 interface BetCheckoutProps {
-    draftedBet: DraftedBet,
-    selectSide: (selectedTeamID: string) => SelectSideAction,
-    enterBidAmount: (enteredBidAmount: string) => EnterBidAmountAction,
-    submitBetSubmission: () => SubmitBetSubmissionAction,
-    cancelBetSubmission: () => CancelBetSubmissionAction,
+    betCheckoutState: BetCheckoutState,
+    onSelectSide: (selectedTeamID: string) => void,
+    onEnterBid: (bidAmount: string) => void,
+    onSubmit: () => void,
+    onCancel: () => void,
 }
 
 export function BetCheckout(props: BetCheckoutProps) {
