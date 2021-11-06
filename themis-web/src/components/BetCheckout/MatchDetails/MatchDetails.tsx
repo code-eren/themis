@@ -32,7 +32,9 @@ export function MatchDetails(props: MatchDetailsProps) {
                                 container
                                 direction="column"
                                 xs={4}
-                                sx={{cursor: "pointer", backgroundColor: teamOddsSelected?.team.ID === teamOdds.team.ID ? '#ededed' : '#ffffff'}}
+                                sx={{cursor: "pointer", backgroundColor: props.betCheckoutState.teamID === teamOdds.team.ID ? '#ededed' : '#ffffff', ":hover": {
+                                    backgroundColor: '#ededed'
+                                }}}
                                 onClick={() => props.onSelectSide(teamOdds.team.ID)}
                             >
                                 <Grid item>

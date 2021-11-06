@@ -1,4 +1,4 @@
-import { MatchesAction } from "../actions/MatchedsActions";
+import { MatchesAction } from "../actions/MatchesActions";
 import { MatchActionType } from "../constants/MatchesActionTypes";
 import { MatchesState } from "../interfaces/MatchesState";
 
