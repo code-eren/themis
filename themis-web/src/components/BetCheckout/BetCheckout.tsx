@@ -4,25 +4,23 @@ import React from "react";
 import { BetCheckoutForm } from "../../interfaces/BetCheckoutForm";
 import { TeamOdds } from "../../interfaces/TeamOdds";
 import { BetAmount } from "./BetAmount/BetAmount";
-import { BetDetails } from "./BetDetails/BetDetails";
+import { MatchDetails } from "./MatchDetails/MatchDetails";
 import { BetExecution } from "../BetExecution/BetExecution";
 import { BetCheckoutState } from "../../interfaces/BetCheckoutState";
+import { MatchesState } from "../../interfaces/MatchesState";
 
 interface BetCheckoutProps {
-    betCheckoutState: BetCheckoutState,
-    onSelectSide: (selectedTeamID: string) => void,
-    onEnterBid: (bidAmount: string) => void,
-    onSubmit: () => void,
-    onCancel: () => void,
+    matchesState: MatchesState;
+    betCheckoutState: BetCheckoutState;
+    onSelectSide: (selectedTeamID: string) => void;
+    onEnterBid: (bidAmount: string) => void;
+    onSubmit: () => void;
+    onCancel: () => void;
 }
 
 export function BetCheckout(props: BetCheckoutProps) {
     const steps = ['Select a side', 'Enter an amount', 'Submit bet'];
     const [currentStep, setCurrentStep] = React.useState(0);
-    const [betCheckoutForm, setBetCheckoutForm] = React.useState<BetCheckoutForm>({
-        teamOddsSelected: null,
-        amountToBet: null
-    })
     const handleNext = () => {
         setCurrentStep((currentStep) => currentStep + 1);
     }
@@ -31,6 +29,7 @@ export function BetCheckout(props: BetCheckoutProps) {
     }
 
     const handleSubmit = () => {
+        props.onSubmit();
         // storeBet(props.betToBuy, betCheckoutForm);
     }
     const handleSelectTeamOddsSelected = (teamOddsSelected: TeamOdds) => {
@@ -55,7 +54,11 @@ export function BetCheckout(props: BetCheckoutProps) {
         switch (step) {
             case 0:
                 return (
-                    <BetDetails bet={props.betToBuy} teamOddsSelected={betCheckoutForm.teamOddsSelected} setTeamOddsSelected={handleSelectTeamOddsSelected} />
+                    <MatchDetails
+                        matchesState={props.matchesState}
+                        betCheckoutState={props.betCheckoutState}
+                        onSelectSide={props.onSelectSide}
+                    />
                 );
             case 1:
                 return (

@@ -1,21 +1,37 @@
 import { Grid, InputAdornment, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
+import { BetCheckoutState } from "../../../interfaces/BetCheckoutState";
+import { Match } from "../../../interfaces/Match";
+import { MatchesState } from "../../../interfaces/MatchesState";
 import { TeamOdds, convertOddsToString } from "../../../interfaces/TeamOdds";
 
 interface BetAmountProps {
-    teamOddsSelected: TeamOdds | null;
-    amount: string | null;
-    setAmount: (amount: string | null) => void; 
+    betCheckoutState: BetCheckoutState;
+    matchState: MatchesState;
+    onBidAmountEntered: (bidAmount: string) => void;
 }
 
 export function BetAmount (props: BetAmountProps) {
-    const [amount, setAmount] = React.useState<string|null>(props.amount);
-
-    const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setAmount(event.target.value);
-        props.setAmount(event.target.value);
+    const getMatch = (bcs: BetCheckoutState, ms: MatchesState) => {
+        let match = ms.matches.find(m => m.ID === bcs.matchID);
+        return match === undefined ? null : match;
     };
+    
+    const getTeamOdds = (bcs: BetCheckoutState, ms: MatchesState, teamID: string) => {
+        let match = getMatch(bcs, ms);
+        if (match === null) {
+            return null;
+        }
+        const allOdds = [
+            match.tie,
+            match.away,
+            match.home
+        ];
+        let odds = allOdds.find(odds => odds.team.ID === teamID);
+        return odds === undefined ? null : odds;
+    };
+
     const getWinnings = (amountParsed: number, odds: number): number => {
         if (odds < 0) {
             return -amountParsed/odds*100;
@@ -42,7 +58,7 @@ export function BetAmount (props: BetAmountProps) {
     return (
         <Box sx={{padding: 2}}>
             {
-                props.teamOddsSelected === null ?
+                props.betCheckoutState.matchID === "" ?
                 <Typography textAlign="center">Please go back and select a side.</Typography> :
                 <Grid container>
                     <Grid xs={12} sx={{margin: 2}}>
@@ -52,8 +68,8 @@ export function BetAmount (props: BetAmountProps) {
                     </Grid>
                     <Grid xs={12} textAlign="center" sx={{margin: 3}}>
                         <TextField
-                            value={amount}
-                            onChange={handleAmountChange}
+                            value={props.betCheckoutState.bidAmount}
+                            onChange={(event) => props.onBidAmountEntered(event.target.value)}
                             label="Amount"
                             InputProps={{
                                 endAdornment: <InputAdornment position="end">ETH</InputAdornment>
@@ -62,7 +78,13 @@ export function BetAmount (props: BetAmountProps) {
                     </Grid>
                     <Grid xs={12}>
                         {
-                            amount && renderAmountWinningsMessage(props.teamOddsSelected, amount)
+                            props.betCheckoutState.bidAmount !== "" 
+                            && renderAmountWinningsMessage(
+                                getMatch(props.betCheckoutState, props.matchState) ?? {
+                                    
+                                },
+                                props.betCheckoutState.bidAmount
+                            )
                         }
                     </Grid>
                 </Grid>
