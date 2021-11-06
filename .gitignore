@@ -5,3 +5,4 @@ betmodel/
 .pk
 
 .openzeppelin/.session
+.vscode
