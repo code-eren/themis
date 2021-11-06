@@ -5,7 +5,8 @@ import {
     selectSide,
     enterBid,
     submit,
-    cancel
+    cancel,
+    setLoading
 } from '../actions/BetCheckoutActions';
 
 const mapStateToProps = (state: State): BetCheckoutProps => ({
@@ -14,7 +15,8 @@ const mapStateToProps = (state: State): BetCheckoutProps => ({
     onSelectSide: selectSide,
     onEnterBid: enterBid,
     onSubmit: submit,
-    onCancel: cancel
+    onCancel: cancel,
+    setLoading,
 });
 
 export default connect(mapStateToProps)(BetCheckout);

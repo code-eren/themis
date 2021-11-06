@@ -3,4 +3,5 @@ export interface BetCheckoutState {
     teamID: string;
     bidAmount: string;
     error: string;
+    loading: boolean;
 }

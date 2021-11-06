@@ -4,4 +4,5 @@ export enum BetCheckoutActionTypes {
     ENTER_BID = "ENTER_BID",
     SUBMIT = "SUBMIT",
     CANCEL = "CANCEL",
+    SET_LOADING = "SET_LOADING",
 }

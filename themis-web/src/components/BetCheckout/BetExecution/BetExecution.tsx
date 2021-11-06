@@ -9,6 +9,7 @@ import * as utils from '../../../utils';
 interface BetExecutionProp {
     betCheckoutState: BetCheckoutState;
     matchesState: MatchesState;
+    setLoading: (loading: boolean) => void
 }
 
 export function BetExecution(props: BetExecutionProp) {

@@ -1,5 +1,6 @@
 import { UserBetsActionTypes } from "../constants/UserBetsActionTypes";
 import { BetCheckoutState } from "../interfaces/BetCheckoutState";
+import { dispatch } from "../storage/redux-store";
 
 export interface AddBetAction {
     type: typeof UserBetsActionTypes.ADD_BET;
@@ -13,7 +14,7 @@ export interface RefreshAction {
 export type UserBetsAction =
     AddBetAction | RefreshAction;
 
-export const addBet = (bet: BetCheckoutState): AddBetAction => ({
+export const addBet = (bet: BetCheckoutState): AddBetAction => dispatch({
     type: UserBetsActionTypes.ADD_BET,
     bet
 });

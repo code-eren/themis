@@ -7,6 +7,7 @@ export const initialState : BetCheckoutState = {
     teamID: "",
     bidAmount: "",
     error: "",
+    loading: false
 };
 
 const BetCheckoutReducer = (state=initialState, action: BetCheckoutAction): BetCheckoutState => {
@@ -44,6 +45,7 @@ const BetCheckoutReducer = (state=initialState, action: BetCheckoutAction): BetC
             if (!isValidBidAmount(action.enteredBidAmount)) {
                 return {
                     ...state,
+                    bidAmount: action.enteredBidAmount,
                     error: "Please enter a valid bid amount."
                 }
             }

@@ -14,6 +14,7 @@ export interface BetCheckoutProps {
     onEnterBid: (bidAmount: string) => void;
     onSubmit: () => void;
     onCancel: () => void;
+    setLoading: (loading: boolean) => void;
 }
 
 export function BetCheckout(props: BetCheckoutProps) {
@@ -48,6 +49,7 @@ export function BetCheckout(props: BetCheckoutProps) {
                     <BetExecution
                         matchesState={props.matchesState}
                         betCheckoutState={props.betCheckoutState}
+                        setLoading={props.setLoading}
                     />
                 );
             default:
