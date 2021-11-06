@@ -12,12 +12,15 @@ export const initialState : BetCheckoutState = {
 const BetCheckoutReducer = (state=initialState, action: BetCheckoutAction): BetCheckoutState => {
     switch (action.type) {
         case BetCheckoutActionTypes.SELECT_MATCH: {
+            console.log("error:")
+            console.log(state.error);
             if (action.selectedMatchID === "") {
                 return {
                     ...state,
                     error: "Please select a valid match.",
                 };
             }
+            console.log("match selected")
             return {
                 ...initialState,
                 matchID: action.selectedMatchID,

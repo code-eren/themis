@@ -1,5 +1,7 @@
 import { Match } from "../interfaces/Match";
 import { BetCheckoutForm } from "../interfaces/BetCheckoutForm";
+import { createStore } from "redux";
+import reducers from "../reducers";
 
 export const storeBet = (bet: Match, betCheckoutForm: BetCheckoutForm) => {
     let matchId = JSON.stringify(bet);
@@ -37,3 +39,6 @@ export const getBets = (): BetsForMatch[] => {
     console.log(allBets);
     return allBets;
 }
+
+export const store = createStore(reducers);
+export const dispatch = store.dispatch;

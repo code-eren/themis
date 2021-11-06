@@ -7,7 +7,6 @@ import {
     TableCell
 } from '@mui/material';
 import { Match } from '../../interfaces/Match';
-import { BetsForMatch } from '../../storage/BetStorage';
 import { convertOddsToString } from '../../interfaces/TeamOdds';
 import * as utils from '../../utils';
 
@@ -17,7 +16,10 @@ interface MatchesTableProps {
 }
 
 export function MatchesTable(props: MatchesTableProps) {
-    const handleTableRowClicked = (match: Match) => props.onMatchClicked(match.ID);
+    const handleTableRowClicked = (match: Match) => {
+        props.onMatchClicked(match.ID);
+        console.log(match.ID)
+    };
     return (
         <Table>
             <TableHead>

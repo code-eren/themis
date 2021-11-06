@@ -7,7 +7,7 @@ import { BetExecution } from "./BetExecution/BetExecution";
 import { BetCheckoutState } from "../../interfaces/BetCheckoutState";
 import { MatchesState } from "../../interfaces/MatchesState";
 
-interface BetCheckoutProps {
+export interface BetCheckoutProps {
     matchesState: MatchesState;
     betCheckoutState: BetCheckoutState;
     onSelectSide: (selectedTeamID: string) => void;

@@ -1,15 +1,13 @@
 import { connect } from "react-redux";
-import { selectMatch } from "../actions/BetCheckoutActions";
+import { cancel, selectMatch } from "../actions/BetCheckoutActions";
 import { AllMatches, AllMatchesProps } from "../components/AllMatches/AllMatches";
 import { State } from "../reducers";
 
-const BetCheckoutContainer = (props: AllMatchesProps) => (
-    <AllMatches {...props} />
-);
-
 const mapStateToProps = (state: State): AllMatchesProps => ({
+    matchesState: state.matches,
+    betCheckoutState: state.betCheckout,
     selectMatch,
-    matchesState: state.matches
+    onCancel: cancel,
 });
 
 export default connect(mapStateToProps)(AllMatches);

@@ -1,4 +1,5 @@
 import {BetCheckoutActionTypes} from '../constants/BetCheckoutActionTypes';
+import { dispatch } from '../storage/redux-store';
 
 export interface SelectMatchAction {
     type: typeof BetCheckoutActionTypes.SELECT_MATCH;
@@ -26,25 +27,25 @@ export interface SubmitAction {
 export type BetCheckoutAction = 
     SelectMatchAction | SelectSideAction | EnterBidAmountAction | CancelAction | SubmitAction;
 
-export const selectMatch = (selectedMatchID: string): SelectMatchAction => ({
+export const selectMatch = (selectedMatchID: string): SelectMatchAction => dispatch({
     type: BetCheckoutActionTypes.SELECT_MATCH,
     selectedMatchID,
 });
 
-export const selectSide = (selectedTeamID: string): SelectSideAction => ({
+export const selectSide = (selectedTeamID: string): SelectSideAction => dispatch({
     type: BetCheckoutActionTypes.SELECT_SIDE,
     selectedTeamID,
 });
 
-export const enterBid = (enteredBidAmount: string): EnterBidAmountAction => ({
+export const enterBid = (enteredBidAmount: string): EnterBidAmountAction => dispatch({
     type: BetCheckoutActionTypes.ENTER_BID,
     enteredBidAmount,
 });
 
-export const cancel = (): CancelAction => ({
+export const cancel = (): CancelAction => dispatch({
     type: BetCheckoutActionTypes.CANCEL,
 });
 
-export const submit = (): SubmitAction => ({
+export const submit = (): SubmitAction => dispatch({
     type: BetCheckoutActionTypes.SUBMIT,
 })

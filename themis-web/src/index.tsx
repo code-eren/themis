@@ -7,13 +7,12 @@ import { MoralisProvider } from 'react-moralis';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import reducers from './reducers';
+import { store } from './storage/redux-store';
 
 const moralisCreds = {
   appId: "7Iy53OzFq24gwU0uVz1hHouvuutzjxzw52L5U6Jm",
   serverUrl: "https://slhgxdebn0lr.usemoralis.com:2053/server"
 };
-
-const store = createStore(reducers);
 
 render(
   <MoralisProvider appId={moralisCreds.appId} serverUrl={moralisCreds.serverUrl}>

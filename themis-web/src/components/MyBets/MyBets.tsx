@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 // import { BetsTable } from '../MatchesTable/MatchesTable';
-import { getBets } from '../../storage/BetStorage';
+import { getBets } from '../../storage/redux-store';
 
 export function MyBets() {
     const myBets = getBets();

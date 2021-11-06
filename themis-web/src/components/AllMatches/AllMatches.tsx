@@ -1,18 +1,19 @@
 import { Container, Dialog, Paper, Typography } from '@mui/material';
-import { Match } from '../../interfaces/Match';
 import React from 'react';
 import { MatchesTable } from '../MatchesTable/MatchesTable';
-// import BetCheckoutContainer from '../../containers/BetCheckoutContainer';
 import { MatchesState } from '../../interfaces/MatchesState';
+import BetCheckoutContainer from '../../containers/BetCheckoutContainer';
+import { BetCheckoutState } from '../../interfaces/BetCheckoutState';
+import { DispatchProp } from 'react-redux';
 
 export interface AllMatchesProps {
     matchesState: MatchesState;
-    selectMatch: (matchID: string) => void
+    betCheckoutState: BetCheckoutState;
+    selectMatch: (matchID: string) => void;
+    onCancel: () => void;
 }
 
 export function AllMatches(props: AllMatchesProps) {
-
-    const [betToBuy, setBetToBuy] = React.useState<Match | null>(null);
     return (
         <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
             <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
@@ -21,10 +22,10 @@ export function AllMatches(props: AllMatchesProps) {
                 </Typography>
                 <MatchesTable matches={props.matchesState.matches} onMatchClicked={props.selectMatch} />
             </Paper>
-            <Dialog onClose={() => setBetToBuy(null)} open={betToBuy !== null}>
-                {/* {
-                    betToBuy && <BetCheckoutContainer />
-                } */}
+            <Dialog onClose={() => props.onCancel()} open={props.betCheckoutState.matchID !== ""}>
+                {
+                    <BetCheckoutContainer />
+                }
             </Dialog>
         </Container>
     );

@@ -1,56 +1,20 @@
-import React from 'react';
 import { connect } from 'react-redux';
-// import {
-//     selectSide,
-//     enterBidAmount,
-//     submitBetSubmission,
-//     cancelBetSubmission
-// } from '../actions/BetCheckoutActions';
-import { DraftedBet } from '../interfaces/BetSubmisison';
-import { BetCheckout } from '../components/BetCheckout/BetCheckout';
-import PropTypes from 'prop-types';
-// import { AppState } from '../reducers';
+import { BetCheckout, BetCheckoutProps } from '../components/BetCheckout/BetCheckout';
+import { State } from '../reducers';
+import {
+    selectSide,
+    enterBid,
+    submit,
+    cancel
+} from '../actions/BetCheckoutActions';
 
-// const BetCheckoutContainer = ({ 
-//     draft: DraftedBet, 
-//     select, 
-//     enter, 
-//     submit, 
-//     cancel 
-// }) => (
-//     <BetCheckout 
-//         draftedBet={draft}
-//         selectSide={select}
-//         enterBidAmount={enter}
-//         submitBetSubmission={submit}
-//         cancelBetSubmission={cancel}
-//     />
-// );
+const mapStateToProps = (state: State): BetCheckoutProps => ({
+    matchesState: state.matches,
+    betCheckoutState: state.betCheckout,
+    onSelectSide: selectSide,
+    onEnterBid: enterBid,
+    onSubmit: submit,
+    onCancel: cancel
+});
 
-// interface State {
-//     draftedBet: DraftedBet;
-//     selectSide: typeof selectSide;
-//     enterBidAmount: typeof enterBidAmount;
-//     submitBetSubmission: typeof submitBetSubmission;
-//     cancelBetSubmission: typeof cancelBetSubmission;
-// }
-
-// const BetCheckoutContainer = (state: State) => (
-//     <BetCheckout
-//         {...state}
-//     />
-// );
-
-// const mapStateToProps = (state: AppState) => ({
-//     draftedBet: state.betSubmission
-// });
-
-// export default connect(
-//     mapStateToProps,
-//     {
-//         selectSide,
-//         enterBidAmount,
-//         submitBetSubmission,
-//         cancelBetSubmission
-//     }
-// )(BetCheckoutContainer);
+export default connect(mapStateToProps)(BetCheckout);
