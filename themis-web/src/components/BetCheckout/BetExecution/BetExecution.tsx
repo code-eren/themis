@@ -1,10 +1,14 @@
 import { Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { BetCheckoutForm } from "../../interfaces/BetCheckoutForm";
-import { convertOddsToString } from "../../interfaces/TeamOdds";
+import { BetCheckoutState } from "../../../interfaces/BetCheckoutState";
+import { MatchesState } from "../../../interfaces/MatchesState";
+import { convertOddsToString } from "../../../interfaces/TeamOdds";
+import { getTeamOdds } from "../../../selectors/TeamOddsSelectors";
+import * as utils from '../../../utils';
 
 interface BetExecutionProp {
-    betCheckoutForm: BetCheckoutForm;
+    betCheckoutState: BetCheckoutState;
+    matchesState: MatchesState;
 }
 
 export function BetExecution(props: BetExecutionProp) {
@@ -19,10 +23,11 @@ export function BetExecution(props: BetExecutionProp) {
         return init.toString();
     }
     const gasCosts = "1.0";
+    const selectedTeamOdds = getTeamOdds(props.betCheckoutState, props.matchesState);
     return (
         <Box sx={{padding: 2}}>
             {
-                props.betCheckoutForm.amountToBet && props.betCheckoutForm.teamOddsSelected ?
+                selectedTeamOdds !== null ?
                 <Grid container spacing={2}>
                     <Grid item xs={12} sx={{margin: 2, marginLeft: 1, marginRight: 1}}>
                         <Typography textAlign="center">
@@ -31,12 +36,12 @@ export function BetExecution(props: BetExecutionProp) {
                     </Grid>
                     <Grid item xs={5}>
                         <Typography textAlign="right">
-                            {props.betCheckoutForm.teamOddsSelected?.team} ({convertOddsToString(props.betCheckoutForm.teamOddsSelected?.odds)})
+                            {selectedTeamOdds.team.fullName} ({utils.otos(selectedTeamOdds.odds)})
                         </Typography>
                     </Grid>
                     <Grid item xs={5}>
                         <Typography textAlign="right">
-                            {props.betCheckoutForm.amountToBet} ETH
+                            {props.betCheckoutState.bidAmount} ETH
                         </Typography>
                     </Grid>
                     <Grid item xs={5}>
@@ -56,7 +61,7 @@ export function BetExecution(props: BetExecutionProp) {
                     </Grid>
                     <Grid item xs={5}>
                         <Typography textAlign="right" sx={{fontWeight: "bold"}}>
-                            {sumOfEthCosts([props.betCheckoutForm.amountToBet, gasCosts])} ETH
+                            {sumOfEthCosts([props.betCheckoutState.bidAmount, gasCosts])} ETH
                         </Typography>
                     </Grid>
                 </Grid> :

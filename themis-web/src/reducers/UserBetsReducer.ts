@@ -22,6 +22,9 @@ const UserBetsReducer = (state=initialState, action: UserBetsAction): UserBetsSt
         case UserBetsActionTypes.REFRESH: {
             return state;
         }
+        default: {
+            return state;
+        }
     }
 }
 

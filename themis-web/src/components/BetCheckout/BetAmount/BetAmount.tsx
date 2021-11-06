@@ -2,36 +2,17 @@ import { Grid, InputAdornment, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { BetCheckoutState } from "../../../interfaces/BetCheckoutState";
-import { Match } from "../../../interfaces/Match";
 import { MatchesState } from "../../../interfaces/MatchesState";
 import { TeamOdds, convertOddsToString } from "../../../interfaces/TeamOdds";
+import { getTeamOdds } from '../../../selectors/TeamOddsSelectors';
 
 interface BetAmountProps {
     betCheckoutState: BetCheckoutState;
-    matchState: MatchesState;
+    matchesState: MatchesState;
     onBidAmountEntered: (bidAmount: string) => void;
 }
 
 export function BetAmount (props: BetAmountProps) {
-    const getMatch = (bcs: BetCheckoutState, ms: MatchesState) => {
-        let match = ms.matches.find(m => m.ID === bcs.matchID);
-        return match === undefined ? null : match;
-    };
-    
-    const getTeamOdds = (bcs: BetCheckoutState, ms: MatchesState, teamID: string) => {
-        let match = getMatch(bcs, ms);
-        if (match === null) {
-            return null;
-        }
-        const allOdds = [
-            match.tie,
-            match.away,
-            match.home
-        ];
-        let odds = allOdds.find(odds => odds.team.ID === teamID);
-        return odds === undefined ? null : odds;
-    };
-
     const getWinnings = (amountParsed: number, odds: number): number => {
         if (odds < 0) {
             return -amountParsed/odds*100;
@@ -40,7 +21,10 @@ export function BetAmount (props: BetAmountProps) {
         }
     }
 
-    const renderAmountWinningsMessage = (teamOdds: TeamOdds, amountAsString: string) => {
+    const renderAmountWinningsMessage = (teamOdds: TeamOdds | null, amountAsString: string) => {
+        if (teamOdds === null) {
+            return <Typography textAlign="center">Please pick a side.</Typography>
+        }
         let amountParsed = parseFloat(amountAsString);
         if (isNaN(amountParsed)) {
             return <Typography textAlign="center">Please enter a decimal.</Typography>;
@@ -80,9 +64,7 @@ export function BetAmount (props: BetAmountProps) {
                         {
                             props.betCheckoutState.bidAmount !== "" 
                             && renderAmountWinningsMessage(
-                                getMatch(props.betCheckoutState, props.matchState) ?? {
-                                    
-                                },
+                                getTeamOdds(props.betCheckoutState, props.matchesState),
                                 props.betCheckoutState.bidAmount
                             )
                         }

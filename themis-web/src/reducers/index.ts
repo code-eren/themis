@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import betCheckout from './BetCheckoutReducer';
+import betCheckout, * as fromBetCheckout from './BetCheckoutReducer';
 import userBets from './UserBetsReducer';
 import matches from './MatchesReducer';
 import { BetCheckoutState } from '../interfaces/BetCheckoutState';
@@ -15,5 +15,5 @@ export interface State {
 export default combineReducers<State>({
     betCheckout,
     userBets,
-    matches
+    matches, 
 });

@@ -2,7 +2,7 @@ import { BetCheckoutActionTypes } from '../constants/BetCheckoutActionTypes';
 import { BetCheckoutState } from '../interfaces/BetCheckoutState';
 import { BetCheckoutAction } from '../actions/BetCheckoutActions';
 
-const initialState : BetCheckoutState = {
+export const initialState : BetCheckoutState = {
     matchID: "",
     teamID: "",
     bidAmount: "",
@@ -37,7 +37,7 @@ const BetCheckoutReducer = (state=initialState, action: BetCheckoutAction): BetC
                 error: "",
             };
         }
-        case  BetCheckoutActionTypes.ENTER_BID: {
+        case BetCheckoutActionTypes.ENTER_BID: {
             if (!isValidBidAmount(action.enteredBidAmount)) {
                 return {
                     ...state,
@@ -50,14 +50,17 @@ const BetCheckoutReducer = (state=initialState, action: BetCheckoutAction): BetC
                 error: "",
             };
         }
-        case  BetCheckoutActionTypes.SUBMIT: {
+        case BetCheckoutActionTypes.SUBMIT: {
             if (!isValidBetCheckoutState(state)) {
                 return state;
             }
             return initialState;
         }
-        case  BetCheckoutActionTypes.CANCEL: {
+        case BetCheckoutActionTypes.CANCEL: {
             return initialState;
+        }
+        default: {
+            return state;
         }
     }
 }

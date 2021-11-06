@@ -1,11 +1,9 @@
 import { Button, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-import { BetCheckoutForm } from "../../interfaces/BetCheckoutForm";
-import { TeamOdds } from "../../interfaces/TeamOdds";
 import { BetAmount } from "./BetAmount/BetAmount";
 import { MatchDetails } from "./MatchDetails/MatchDetails";
-import { BetExecution } from "../BetExecution/BetExecution";
+import { BetExecution } from "./BetExecution/BetExecution";
 import { BetCheckoutState } from "../../interfaces/BetCheckoutState";
 import { MatchesState } from "../../interfaces/MatchesState";
 
@@ -27,29 +25,6 @@ export function BetCheckout(props: BetCheckoutProps) {
     const handleBack = () => {
         setCurrentStep((currentStep) => currentStep - 1);
     }
-
-    const handleSubmit = () => {
-        props.onSubmit();
-        // storeBet(props.betToBuy, betCheckoutForm);
-    }
-    const handleSelectTeamOddsSelected = (teamOddsSelected: TeamOdds) => {
-        setBetCheckoutForm((prevBetCheckoutForm: BetCheckoutForm) => {
-            return {
-                ...prevBetCheckoutForm,
-                teamOddsSelected
-            }
-        })
-    }
-
-    const handleAmountSet = (amountToBet: string | null) => {
-        setBetCheckoutForm((prevBetCheckoutForm: BetCheckoutForm) => {
-            return {
-                ...prevBetCheckoutForm,
-                amountToBet
-            }
-        })
-    }
-
     const renderStepperPage = (step: number) => {
         switch (step) {
             case 0:
@@ -62,11 +37,18 @@ export function BetCheckout(props: BetCheckoutProps) {
                 );
             case 1:
                 return (
-                    <BetAmount teamOddsSelected={betCheckoutForm.teamOddsSelected} amount={betCheckoutForm.amountToBet} setAmount={handleAmountSet} />
+                    <BetAmount
+                        matchesState={props.matchesState}
+                        betCheckoutState={props.betCheckoutState}
+                        onBidAmountEntered={props.onEnterBid}
+                    />
                 );
             case 2:
                 return (
-                    <BetExecution betCheckoutForm={betCheckoutForm} />
+                    <BetExecution
+                        matchesState={props.matchesState}
+                        betCheckoutState={props.betCheckoutState}
+                    />
                 );
             default:
                 return (
@@ -101,7 +83,7 @@ export function BetCheckout(props: BetCheckoutProps) {
             }
             {
                 currentStep === steps.length - 1 &&
-                <Button variant="contained" onClick={handleSubmit}>Submit</Button>
+                <Button variant="contained" onClick={props.onSubmit}>Submit</Button>
             }
         </Box>
     );

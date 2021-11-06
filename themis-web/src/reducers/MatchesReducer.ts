@@ -41,6 +41,9 @@ const MatchesStateReducer = (state:MatchesState=initialState, action: MatchesAct
         case MatchActionType.FETCH_MATCHES: {
             return state;
         }
+        default: {
+            return state;
+        }
     }
 };
 
