@@ -1,6 +1,6 @@
 const HelloWorld = artifacts.require("HelloWorld");
 const Campaign = artifacts.require("Campaign");
-const Counter  = artifacts.require("Counter");
+
 const CampaignFactory = artifacts.require("CampaignFactory");
 
 //deploy the CampaginFactory
