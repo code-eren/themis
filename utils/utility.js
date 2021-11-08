@@ -1,4 +1,4 @@
-const {Contract} = require('ethers');
+const {ethers, Contract} = require('ethers');
 const {localSetup, kovanSetup} = require("../utils/setup.js");
 
 
@@ -33,4 +33,55 @@ function getContract(contract, net, deployedaddr = "") {
   return new Contract(deployedaddr, contractJson.abi, signer);
 }
 
-module.exports = {getContract}
+/**
+ * @param {string} tokenAddr - token contract address, LINK "0xa36085F69e2889c224210F603D836748e7dC0088"
+ * @param {string} amount - '1.0'
+ * @param {int} decimal - 18
+ * @param {string} toAddr 
+ * @param {string} net - "local" | "kovan"
+ */
+async function sendToken(tokenAddr, amount, decimal, toAddr, net) {
+  // Connect to the contract
+  var contractAbiFragment = [
+    {
+        "name" : "transfer",
+        "type" : "function",
+        "inputs" : [
+          {
+              "name" : "_to",
+              "type" : "address"
+          },
+          {
+              "type" : "uint256",
+              "name" : "_tokens"
+          }
+        ],
+        "constant" : false,
+        "outputs" : [],
+        "payable" : false
+    }
+  ];
+  var signer;
+  switch (net) {
+    case "local":
+      signer = localSetup.signer;
+      break;
+    case "kovan":
+      signer = kovanSetup.signer;
+      break;
+    default:
+      throw "unsupported net"
+  }
+  var contract = new ethers.Contract(tokenAddr, contractAbiFragment, signer);
+
+  // How many tokens?
+  
+  var numberOfTokens = ethers.utils.parseUnits(amount, decimal);
+
+  // Send tokens
+  let tx = await contract.transfer(toAddr, numberOfTokens);
+  console.log(tx);
+
+}
+
+module.exports = {getContract, sendToken}
