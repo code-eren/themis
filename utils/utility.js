@@ -1,4 +1,4 @@
-const {Contract} = require('ethers');
+const {ethers, Contract} = require('ethers');
 const {localSetup, kovanSetup} = require("../utils/setup.js");
 
 
@@ -34,10 +34,61 @@ function getContract(contract, net, deployedaddr = "") {
 }
 
 /**
+ * @param {string} tokenAddr - token contract address, LINK "0xa36085F69e2889c224210F603D836748e7dC0088"
+ * @param {string} amount - '1.0'
+ * @param {int} decimal - 18
+ * @param {string} toAddr 
+ * @param {string} net - "local" | "kovan"
+ */
+ async function sendToken(tokenAddr, amount, decimal, toAddr, net) {
+  // Connect to the contract
+  var contractAbiFragment = [
+    {
+        "name" : "transfer",
+        "type" : "function",
+        "inputs" : [
+          {
+              "name" : "_to",
+              "type" : "address"
+          },
+          {
+              "type" : "uint256",
+              "name" : "_tokens"
+          }
+        ],
+        "constant" : false,
+        "outputs" : [],
+        "payable" : false
+    }
+  ];
+  var signer;
+  switch (net) {
+    case "local":
+      signer = localSetup.signer;
+      break;
+    case "kovan":
+      signer = kovanSetup.signer;
+      break;
+    default:
+      throw "unsupported net"
+  }
+  var contract = new ethers.Contract(tokenAddr, contractAbiFragment, signer);
+
+  // How many tokens?
+  
+  var numberOfTokens = ethers.utils.parseUnits(amount, decimal);
+
+  // Send tokens
+  let tx = await contract.transfer(toAddr, numberOfTokens);
+  console.log(tx);
+
+}
+
+/**
  * @param {string} transactionHash - txHash
  * @param {string} net - "local" | "kovan"
  */
-async function checkTransactionConfirmed(transactionHash, net) {
+ async function checkTransactionConfirmed(transactionHash, net) {
   var txReceipt;
   switch (net) {
     case "local":
@@ -49,11 +100,11 @@ async function checkTransactionConfirmed(transactionHash, net) {
     default:
       throw "unsupported net"
   }
-  
+
   if (txReceipt && txReceipt.blockNumber) {
       return txReceipt;
   }
 
 }
 
-module.exports = {getContract, checkTransactionConfirmed}
+module.exports = {getContract, sendToken, checkTransactionConfirmed}

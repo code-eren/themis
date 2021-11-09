@@ -19,6 +19,7 @@ contract CampaignFactory {
     }
 
     function createCampaign(
+        address _oracle,
         uint256 _matchId,
         uint256 _teamId0,
         uint256 _teamId1,
@@ -27,6 +28,7 @@ contract CampaignFactory {
     ) external returns (address) {
         address clone = Clones.clone(implementationContract);
         Campaign(payable(clone)).initialize(
+            _oracle,
             _matchId,
             _teamId0,
             _teamId1,
