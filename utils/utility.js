@@ -33,4 +33,27 @@ function getContract(contract, net, deployedaddr = "") {
   return new Contract(deployedaddr, contractJson.abi, signer);
 }
 
-module.exports = {getContract}
+/**
+ * @param {string} transactionHash - txHash
+ * @param {string} net - "local" | "kovan"
+ */
+async function checkTransactionConfirmed(transactionHash, net) {
+  var txReceipt;
+  switch (net) {
+    case "local":
+      txReceipt = await kovanSetup.jsonProvider.getTransactionReceipt(transactionHash);
+      break;
+    case "kovan":
+      txReceipt = await localSetup.jsonProvider.getTransactionReceipt(transactionHash);
+      break;
+    default:
+      throw "unsupported net"
+  }
+  
+  if (txReceipt && txReceipt.blockNumber) {
+      return txReceipt;
+  }
+
+}
+
+module.exports = {getContract, checkTransactionConfirmed}

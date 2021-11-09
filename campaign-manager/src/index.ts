@@ -6,11 +6,11 @@ const server = require('server');
 const { get, post } = server.router;
 
 // public port
-server({ port: 8080 }, [
+server({ port: 8090 }, [
   get('/campaigns', fetchCampaigns)
 ]);
 
 // private port
-server({ port: 8090 }, [
+server({ port: 8091 }, [
   post('/campaign', createCampaign),
 ]);
