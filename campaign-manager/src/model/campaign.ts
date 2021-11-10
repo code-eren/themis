@@ -3,16 +3,16 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 @Entity()
 export class Campaign {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
-    matchID: string;
+    matchID: number;
 
     @Column()
-    awayTeamID: string;
+    awayTeamID: number;
 
     @Column()
-    homeTeamID: string;
+    homeTeamID: number;
 
     @Column()
     awayTeamOdds: number;

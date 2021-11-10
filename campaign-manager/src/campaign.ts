@@ -1,8 +1,8 @@
 import {status} from 'server/reply';
 import CampaignFactoryABI from './abi/CampaignFactory.json';
 import {Contract, providers} from 'ethers';
-import { getConnection } from './db';
 import { Campaign } from './model/campaign';
+import { getConnection } from 'typeorm';
 
 const localAddr = "http://localhost:8545";
 const testrpcprovider = new providers.JsonRpcProvider(localAddr);
@@ -15,9 +15,9 @@ const contract = new Contract(
 
 export interface CreateCampaignRequest {
     data: {
-        matchID: string;
-        awayTeamID: string;
-        homeTeamID: string;
+        matchID: number;
+        awayTeamID: number;
+        homeTeamID: number;
         awayOdds: number;
         homeOdds: number;
     };
@@ -32,16 +32,15 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
         ctx.data.awayOdds,
         ctx.data.homeOdds
     );
-    getConnection().then((conn) => {
-        let campaign = new Campaign();
-        campaign.matchID = ctx.data.matchID;
-        campaign.awayTeamID = ctx.data.awayTeamID;
-        campaign.homeTeamID = ctx.data.homeTeamID;
-        campaign.awayTeamOdds = ctx.data.awayOdds;
-        campaign.homeTeamOdds = ctx.data.homeOdds;
-        campaign.address = addr;
-        conn.manager.save(campaign);
-    });
+    const conn = getConnection();
+    let campaign = new Campaign();
+    campaign.matchID = ctx.data.matchID;
+    campaign.awayTeamID = ctx.data.awayTeamID;
+    campaign.homeTeamID = ctx.data.homeTeamID;
+    campaign.awayTeamOdds = ctx.data.awayOdds;
+    campaign.homeTeamOdds = ctx.data.homeOdds;
+    campaign.address = addr;
+    conn.manager.save(campaign);
     return status(200).json({
         addr
     });
@@ -53,14 +52,11 @@ export interface FetchCampaignsRequest {
     }
 }
 
-export const fetchCampaigns = async (ctx: FetchCampaignsRequest) => {
-    let campaigns = await getConnection().then((conn) => {
-        let campaignRepo = conn.getRepository(Campaign);
-        return campaignRepo.find({
-            take: ctx.data.count
-        });
-    });
+export const fetchCampaigns = async (ctx: any) => {
+    const conn = getConnection();
+    let campaignRepo = conn.getRepository(Campaign);
+    const campaigns = campaignRepo.find();
     return status(200).json({
         campaigns
-    })
+    });
 } 

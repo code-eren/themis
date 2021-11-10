@@ -24,9 +24,13 @@
     "@openzeppelin/contracts": "^4.3.2",
     "@openzeppelin/contracts-ethereum-package": "^3.0.0",
     "@openzeppelin/upgrades": "^2.8.0",
+    "@truffle/hdwallet-provider": "^1.6.0",
     "cron": "^1.8.2",
     "dotenv": "^10.0.0",
-    "ethers": "^5.5.1"
+    "ethers": "^5.5.1",
+    "reflect-metadata": "^0.1.13",
+    "server": "^1.0.36",
+    "typeorm": "^0.2.39"
   },
   "devDependencies": {
     "@openzeppelin/cli": "^2.8.2",
