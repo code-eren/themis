@@ -28,6 +28,5 @@ const cors = [
 
 // private port
 server({ security: { csrf: false }, port: 8090 }, cors, [
-  console.log,
   post('/createCampaign', createCampaign)
 ]);
