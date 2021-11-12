@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier-format": "prettier --config .prettierrc '**/*.ts' --write"
   },
   "repository": {
     "type": "git",
@@ -30,10 +31,13 @@
     "ethers": "^5.5.1",
     "reflect-metadata": "^0.1.13",
     "server": "^1.0.36",
-    "typeorm": "^0.2.39"
+    "sqlite3": "^5.0.2",
+    "typeorm": "^0.2.40"
   },
   "devDependencies": {
     "@openzeppelin/cli": "^2.8.2",
-    "@openzeppelin/truffle-upgrades": "^1.10.0"
+    "@openzeppelin/truffle-upgrades": "^1.10.0",
+    "@types/server": "^1.0.4",
+    "prettier": "^2.4.1"
   }
 }

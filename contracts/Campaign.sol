@@ -8,18 +8,19 @@ import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 contract Campaign is ChainlinkClient {
     using Chainlink for Chainlink.Request;
 
-    uint256 constant private ORACLE_PAYMENT = 1 * LINK_DIVISIBILITY;
-    
+    uint256 private constant ORACLE_PAYMENT = 1 * LINK_DIVISIBILITY;
+
     // home is just team0, away is team1
     uint256 public homescore;
     uint256 public awayscore;
 
     address private owner;
     uint256 public gameId;
-    uint256 public teamId0; // TODO: probably don't need it 
-    uint256 public teamId1; // TODO: probably don't need it 
-    uint256 public odds0;
-    uint256 public odds1;
+    uint256 public teamId0; // TODO: probably don't need it, need to ensure consistency
+    uint256 public teamId1; // TODO: probably don't need it, need to ensure consistency
+    uint256 public odds0; // odd that team0 wins 1.1 -> 110 , bid 1, get 1.1 back
+    uint256 public odds1; // odd that team1 wins 4.1 -> 410 , bid 1, get 4.1 back
+    uint256 public oddsDraw; // odd of draw wins 3   -> 300 , bid 1, get 3 back
 
     event RequestScoreFulfilled(
         bytes32 indexed requestId,
@@ -45,9 +46,9 @@ contract Campaign is ChainlinkClient {
         _;
     }
 
-    // TODO: make it public
-    uint256 winnedTeamId;
-    bool fulfilled; //whether the data is fulfilled
+
+    uint256 public winnedTeamId;
+    bool public fulfilled; //whether the data is fulfilled
 
     function initialize(
         address oracle,
@@ -56,6 +57,7 @@ contract Campaign is ChainlinkClient {
         uint256 _teamId1,
         uint256 _initialOdds0,
         uint256 _initialOdds1,
+        uint256 _drawodds,
         address _owner
     ) external {
         owner = _owner;
@@ -64,32 +66,33 @@ contract Campaign is ChainlinkClient {
         teamId1 = _teamId1;
         odds0 = _initialOdds0;
         odds1 = _initialOdds1;
+        oddsDraw = _drawodds;
         setPublicChainlinkToken();
         setChainlinkOracle(oracle);
     }
 
     // TODO: should be called/triggered by keeper
-    function requestScore(string memory _jobId) public isOwner
-    {
-        Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfillScore.selector);
+    function requestScore(string memory _jobId) public isOwner {
+        Chainlink.Request memory req = buildChainlinkRequest(
+            stringToBytes32(_jobId),
+            address(this),
+            this.fulfillScore.selector
+        );
         req.add("gameId", uint2str(gameId));
         requestOracleData(req, ORACLE_PAYMENT);
     }
 
-    function fulfillScore(bytes32 _requestId, uint256 _homescore, uint256 _awayscore)
-    public
-    recordChainlinkFulfillment(_requestId)
-    {
+    function fulfillScore(
+        bytes32 _requestId,
+        uint256 _homescore,
+        uint256 _awayscore
+    ) public recordChainlinkFulfillment(_requestId) {
         emit RequestScoreFulfilled(_requestId, _homescore, _awayscore);
         homescore = _homescore;
         awayscore = _awayscore;
-        winnedTeamId = homescore > awayscore ? 0 : (homescore < awayscore ? 1 : 2);
-        fulfilled = true;
-    }
-
-    // TODO replace with an oracle that provides match result data, or build our own, and change teamId accordingly
-    function fulfill() external {
-        winnedTeamId = 1;
+        winnedTeamId = homescore > awayscore
+            ? 0
+            : (homescore < awayscore ? 1 : 2);
         fulfilled = true;
     }
 
@@ -102,7 +105,9 @@ contract Campaign is ChainlinkClient {
         require(msg.value > 0, "can't bid 0 amount"); //set minimum bid amount?
         addr2bidder[msg.sender].bids.push(
             Bid({
-                odd: _teamId == teamId0 ? odds0 : odds1,
+                odd: _teamId == teamId0 ? odds0 : _teamId == teamId1
+                    ? odds1
+                    : oddsDraw,
                 amount: msg.value,
                 teamId: _teamId
             })
@@ -143,26 +148,32 @@ contract Campaign is ChainlinkClient {
     // TODO: need test
     function withdrawLink() public isOwner {
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
-        require(link.transfer(msg.sender, link.balanceOf(address(this))), "Unable to transfer");
+        require(
+            link.transfer(msg.sender, link.balanceOf(address(this))),
+            "Unable to transfer"
+        );
     }
 
-
     //----------------utility---------------------------------------------------
-    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+    function uint2str(uint256 _i)
+        internal
+        pure
+        returns (string memory _uintAsString)
+    {
         if (_i == 0) {
             return "0";
         }
-        uint j = _i;
-        uint len;
+        uint256 j = _i;
+        uint256 len;
         while (j != 0) {
             len++;
             j /= 10;
         }
         bytes memory bstr = new bytes(len);
-        uint k = len;
+        uint256 k = len;
         while (_i != 0) {
-            k = k-1;
-            uint8 temp = (48 + uint8(_i - _i / 10 * 10));
+            k = k - 1;
+            uint8 temp = (48 + uint8(_i - (_i / 10) * 10));
             bytes1 b1 = bytes1(temp);
             bstr[k] = b1;
             _i /= 10;
@@ -170,20 +181,23 @@ contract Campaign is ChainlinkClient {
         return string(bstr);
     }
 
-    function stringToBytes32(string memory source) private pure returns (bytes32 result) {
+    function stringToBytes32(string memory source)
+        private
+        pure
+        returns (bytes32 result)
+    {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
-        return 0x0;
+            return 0x0;
         }
 
-        assembly { // solhint-disable-line no-inline-assembly
-        result := mload(add(source, 32))
+        assembly {
+            // solhint-disable-line no-inline-assembly
+            result := mload(add(source, 32))
         }
     }
 
     function getChainlinkToken() public view returns (address) {
         return chainlinkTokenAddress();
     }
-
-    
 }

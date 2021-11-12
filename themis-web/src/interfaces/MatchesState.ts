@@ -1,6 +1,6 @@
-import { Match } from "./Match";
+import { Match } from './Match';
 
 export interface MatchesState {
-    matches: Match[];
-    error: string;
+  matches: Match[];
+  error: string;
 }

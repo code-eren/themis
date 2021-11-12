@@ -1,6 +1,6 @@
-import { TeamOdds } from "./TeamOdds";
+import { TeamOdds } from './TeamOdds';
 
 export interface BetCheckoutForm {
-    teamOddsSelected: TeamOdds | null;
-    amountToBet: string | null;
+  teamOddsSelected: TeamOdds | null;
+  amountToBet: string | null;
 }
