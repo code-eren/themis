@@ -1,6 +1,7 @@
 import { CampaignFactory } from '../../factory';
 import { status } from 'server/reply';
 import { delay, checkTransactionConfirmed } from '../../../utils/utility';
+import { moneyLine2contractOdds } from '../../../utils/math';
 
 // global data
 // map from sport to factory later when support mulitple support
@@ -25,9 +26,9 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
     ctx.data.gameId,
     ctx.data.teamId0,
     ctx.data.teamId1,
-    ctx.data.team0MoneyLine,
-    ctx.data.team1MoneyLine,
-    ctx.data.drawMoneyLine
+    moneyLine2contractOdds(ctx.data.team0MoneyLine),
+    moneyLine2contractOdds(ctx.data.team1MoneyLine),
+    moneyLine2contractOdds(ctx.data.drawMoneyLine)
   );
   // wait for tx to be confirmed
   // number of time to retry

@@ -1,9 +1,5 @@
-const { getContract, sendToken } = require('../utils/utility.js');
-const { CampaignFactory } = require('./factory.js');
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import { getContract, sendToken, delay } from '../utils/utility';
+import { CampaignFactory } from './factory';
 
 // assume campaignFactory has been deployed on kovan
 (async () => {
@@ -15,6 +11,7 @@ function sleep(ms) {
   let teamId1 = 1;
   let odds0 = 410;
   let odds1 = 110;
+  let odds2 = 120;
   // create new cloned Campaign
   let tx = await cf.createCampaign(
     oracleAddr,
@@ -22,16 +19,17 @@ function sleep(ms) {
     teamId0,
     teamId1,
     odds0,
-    odds1
+    odds1,
+    odds2
   );
   console.log(tx);
   console.log('Creating a new Campaign ...');
   // wait 10s for the transaction to be included
-  await sleep(10000);
+  await delay(10000);
   console.log('Campaign created');
   // get clone contract addresses
-  let addresses = await cf.getCloneAddrs();
-  let newAddress = addresses[addresses.length - 1];
+  let newAddress = await cf.getAddress(gameId);
+  console.log("campaign address: "+newAddress);
   let newCampaign = getContract('Campaign', 'kovan', newAddress);
 
   // should be 0
@@ -49,7 +47,7 @@ function sleep(ms) {
   );
 
   // wait 10s for the transaction to be included
-  await sleep(10000);
+  await delay(10000);
   console.log('Sent');
 
   let jobId = '7bf0064504c04021a43b9ebadddfedfb';
@@ -58,10 +56,10 @@ function sleep(ms) {
   console.log(tx);
   console.log('Requesting score from external adapter ...');
   // wait 10s for fulfillment takes place
-  await sleep(10000);
+  await delay(10000);
   console.log('Request finished');
 
-  // should be 2 and 6
+  // should be 2 and 6, NOTE: sometimes data fulfillment may take longer than 10s, use factory_test2 to further check score...
   console.log(await newCampaign.homescore());
   console.log(await newCampaign.awayscore());
 })();

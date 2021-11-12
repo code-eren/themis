@@ -1,10 +1,10 @@
 import { providers, Wallet } from 'ethers';
 import fs from 'fs';
-import { config } from 'dotenv';
 
+import { config } from 'dotenv';
 config();
 
-console.log(process.env);
+
 // import * as dotenv from 'dotenv'
 // dotenv.config();
 // require('dotenv').config({ path: require('find-config')('.env') })
