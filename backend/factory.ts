@@ -29,6 +29,10 @@ export class CampaignFactory {
     );
   }
 
+  getFactoryAddress(){
+    return this.campaignFactory.address;
+  }
+
   // async getCloneAddrs(){
   //   return await this.campaignFactory.getCloneAddrs();
   // }

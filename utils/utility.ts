@@ -29,6 +29,7 @@ export function getContract(contract: string, net: string, deployedaddr = '') {
   if (deployedaddr == '') {
     deployedaddr = contractJson['networks'][networkId.toString()]['address'];
   }
+  console.log("signer", signer);
   return new Contract(deployedaddr, contractJson.abi, signer);
 }
 
@@ -99,12 +100,12 @@ export async function checkTransactionConfirmed(
   var txReceipt;
   switch (net) {
     case 'local':
-      txReceipt = await kovanSetup.jsonProvider.getTransactionReceipt(
+      txReceipt = await localSetup.jsonProvider.getTransactionReceipt(
         transactionHash
       );
       break;
     case 'kovan':
-      txReceipt = await localSetup.jsonProvider.getTransactionReceipt(
+      txReceipt = await kovanSetup.jsonProvider.getTransactionReceipt(
         transactionHash
       );
       break;

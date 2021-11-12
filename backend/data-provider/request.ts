@@ -1,9 +1,7 @@
 var axios = require('axios').default;
-import { createConnection } from 'typeorm';
+import { getConnection } from 'typeorm';
 import { Schedule } from '../db/entity/schedule';
 import { Campaign } from '../db/entity/campaign';
-import { createConnectionToDB } from '../db/createConn';
-// TODO: change createConnection to getConnection to reuse exisitng connection
 
 if (!process.env.SPORTSDATAIO_API_KEY) {
   console.error('please set the api key!');
@@ -29,13 +27,8 @@ export async function querySchedule(date: string) {
     .request(options)
     .then(async (response) => {
       // write the schedule to db
-      createConnection({
-        type: 'sqlite',
-        database: '../themis.db', // create a db in root of backend
-        entities: [Schedule, Campaign],
-        synchronize: true,
-        logging: false
-      }).then(async (conn) => {
+      const conn = getConnection();
+      (async (conn) => {
         let scheduleRepository = conn.getRepository(Schedule);
         for (const schedule of response.data) {
           let newSchedule = new Schedule();
@@ -100,41 +93,42 @@ export async function querySchedule(date: string) {
           newSchedule.PlayoffAggregateScore = schedule['PlayoffAggregateScore'];
           // save the new record
           await scheduleRepository.save(newSchedule);
-          gameid2scheduleid[schedule['GameId']] =
-            await scheduleRepository.findOne({
-              where: { GameId: schedule['GameId'] },
-              order: { Id: 'DESC' }
-            });
+          const newlyInsertedSchedule = await scheduleRepository.findOne({
+            where: { GameId: schedule['GameId'] },
+            order: { Id: 'DESC' }
+          });
+          gameid2scheduleid[schedule['GameId']] = newlyInsertedSchedule.Id
           console.log(
             `saved a new schedule with gameId ${newSchedule.GameId} to db`
           );
         }
-      });
+      })(conn);
 
       // start deploying valid schedule for this round of query
       for (const schedule of response.data) {
         if (validForDeploy(schedule)) {
           // make a post request to create a campaign
-          axios
+          await axios
             .post('http://localhost:8090/createCampaign', {
-              data: {
-                oracleAddr: '0xC25d00698c4c48557B363F35AFe09d8f7907296c',
-                gameId: schedule['GameId'],
-                teamId0: schedule['HomeTeamId'],
-                teamId1: schedule['AwayTeamId'],
-                team0MoneyLine: schedule['HomeTeamMoneyLine'],
-                team1MoneyLine: schedule['AwayTeamMoneyLine'],
-                drawMoneyLine: schedule['DrawMoneyLine']
-              }
+              oracleAddr: '0xC25d00698c4c48557B363F35AFe09d8f7907296c',
+              gameId: schedule['GameId'],
+              teamId0: schedule['HomeTeamId'],
+              teamId1: schedule['AwayTeamId'],
+              team0MoneyLine: schedule['HomeTeamMoneyLine'],
+              team1MoneyLine: schedule['AwayTeamMoneyLine'],
+              drawMoneyLine: schedule['DrawMoneyLine']
             })
             .then((res) => {
               console.log(`statusCode: ${res.status}`);
-              if (res.status == 200 && res.deployedAddr != null) {
+              console.log(res.deployedAddr);
+              console.log(res.data);
+              if (res.status == 200 && res.data.deployedAddr != null) {
                 // write the deployed campaign to db for later use
-                createConnectionToDB().then(async (conn) => {
+                const conn = getConnection();
+                (async (conn) => {
                   let campaignRepository = conn.getRepository(Campaign);
                   let campaign = new Campaign();
-                  campaign.DeployedAddress = res.deployedAddr;
+                  campaign.DeployedAddress = res.data.deployedAddr;
                   campaign.GameId = schedule['GameId'];
                   campaign.KeeperAddress = null;
                   campaign.OracleAddress =
@@ -145,7 +139,7 @@ export async function querySchedule(date: string) {
                   console.log(
                     `saved a new deployed campaign with gameId ${campaign.GameId} and deployed addr ${campaign.DeployedAddress} to db`
                   );
-                });
+                })(conn);
               }
             })
             .catch((error) => {
