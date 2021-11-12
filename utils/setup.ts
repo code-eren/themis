@@ -1,14 +1,9 @@
 import { providers, Wallet } from 'ethers';
-import fs from 'fs';
+import * as fs from 'fs';
 
 import { config } from 'dotenv';
 config();
 
-
-// import * as dotenv from 'dotenv'
-// dotenv.config();
-// require('dotenv').config({ path: require('find-config')('.env') })
-// export function getenv()  {console.log(process.env); return process.env;}
 //local net
 const localjsonrpcprovider = new providers.JsonRpcProvider(
   process.env.LOCALHOST
@@ -24,7 +19,7 @@ export const localSetup = {
 const kovanjsonrpcprovider = new providers.JsonRpcProvider(
   process.env.KOVAN_API
 );
-console.log(process.env);
+
 const privatekey = fs
   .readFileSync(
     process.env.PATH_TO_PK === undefined ? 'default' : process.env.PATH_TO_PK

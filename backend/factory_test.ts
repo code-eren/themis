@@ -29,7 +29,7 @@ import { CampaignFactory } from './factory';
   console.log('Campaign created');
   // get clone contract addresses
   let newAddress = await cf.getAddress(gameId);
-  console.log("campaign address: "+newAddress);
+  console.log('campaign address: ' + newAddress);
   let newCampaign = getContract('Campaign', 'kovan', newAddress);
 
   // should be 0

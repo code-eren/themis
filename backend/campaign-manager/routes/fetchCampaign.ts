@@ -1,16 +1,58 @@
 import { status } from 'server/reply';
+import { Campaign } from '../../db/entity/campaign';
+import { Database } from '../../db/db';
+import { getConnection } from 'typeorm';
 
-export interface FetchCampaignsRequest {
+export interface FetchCampaignByGameIdRequest {
   data: {
     gameId: number;
   };
 }
 
-// export const fetchCampaigns = async (ctx: any) => {
-//   const conn = getConnection();
-//   let campaignRepo = conn.getRepository(Campaign);
-//   const campaigns = campaignRepo.find();
-//   return status(200).json({
-//       campaigns
-//   });
-// }
+// global data
+// db for db interaction
+let db = new Database();
+/**
+ *
+ * @returns all deployed campaigns with their metadata in db
+ */
+export const fetchCampaigns = async () => {
+  let joinedCampaigns = await (await db.getConnection('default'))
+    .getRepository(Campaign)
+    .createQueryBuilder('Campaign')
+    .innerJoinAndSelect(
+      'Schedule',
+      'schedule',
+      'campaign.ScheduleId = schedule.Id'
+    )
+    .getRawMany();
+
+  return status(200).json({
+    joinedCampaigns
+  });
+};
+
+/**
+ *
+ * @param ctx gameId
+ * @returns campaign with gameId in db
+ */
+export const fetchCampaignByGameId = async (
+  ctx: FetchCampaignByGameIdRequest
+) => {
+  let joinedCampaign = await (await db.getConnection('default'))
+    .getRepository(Campaign)
+    .createQueryBuilder('Campaign')
+    .where(`Campaign.GameId = ${ctx.data.gameId}`)
+    .innerJoinAndSelect(
+      'Schedule',
+      'schedule',
+      'Campaign.ScheduleId = schedule.Id'
+    )
+    .getRawMany();
+  return status(200).json({
+    joinedCampaign
+  });
+};
+
+// (async ()=>(await fetchCampaignByGameId({data: {gameId: 39370}})))();

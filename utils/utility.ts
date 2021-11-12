@@ -29,7 +29,6 @@ export function getContract(contract: string, net: string, deployedaddr = '') {
   if (deployedaddr == '') {
     deployedaddr = contractJson['networks'][networkId.toString()]['address'];
   }
-  console.log("signer", signer);
   return new Contract(deployedaddr, contractJson.abi, signer);
 }
 

@@ -1,9 +1,6 @@
 var CronJob = require('cron').CronJob;
 require('dotenv').config();
 import { querySchedule } from './request';
-import { createConnectionToDB } from '../db/createConn';
-
-createConnectionToDB();
 
 var count = 0;
 const RUN_TIME = 1;

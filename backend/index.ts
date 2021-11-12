@@ -1,4 +1,4 @@
-import { createConnectionToDB } from './db/createConn';
+import { createConnectionToDB } from './db/db';
 // create a new db if hasn't existed
 createConnectionToDB();
 // start ea server

@@ -2,6 +2,7 @@ var axios = require('axios').default;
 import { getConnection } from 'typeorm';
 import { Schedule } from '../db/entity/schedule';
 import { Campaign } from '../db/entity/campaign';
+import { Database } from '../db/db';
 
 if (!process.env.SPORTSDATAIO_API_KEY) {
   console.error('please set the api key!');
@@ -12,6 +13,7 @@ let api_key = process.env.SPORTSDATAIO_API_KEY;
 // in-memory cache for db, all gameId we have already created a campaign for
 // TODO: should periodically flush to db
 let gameIdDeployed = new Set();
+const db = new Database();
 
 /**
  * @param {string} date in format of xxxx-xx-xx, year-month-day
@@ -27,7 +29,7 @@ export async function querySchedule(date: string) {
     .request(options)
     .then(async (response) => {
       // write the schedule to db
-      const conn = getConnection();
+      const conn = await db.getConnection('default');
       (async (conn) => {
         let scheduleRepository = conn.getRepository(Schedule);
         for (const schedule of response.data) {
@@ -97,7 +99,7 @@ export async function querySchedule(date: string) {
             where: { GameId: schedule['GameId'] },
             order: { Id: 'DESC' }
           });
-          gameid2scheduleid[schedule['GameId']] = newlyInsertedSchedule.Id
+          gameid2scheduleid[schedule['GameId']] = newlyInsertedSchedule.Id;
           console.log(
             `saved a new schedule with gameId ${newSchedule.GameId} to db`
           );
@@ -118,13 +120,11 @@ export async function querySchedule(date: string) {
               team1MoneyLine: schedule['AwayTeamMoneyLine'],
               drawMoneyLine: schedule['DrawMoneyLine']
             })
-            .then((res) => {
+            .then(async (res) => {
               console.log(`statusCode: ${res.status}`);
-              console.log(res.deployedAddr);
-              console.log(res.data);
               if (res.status == 200 && res.data.deployedAddr != null) {
                 // write the deployed campaign to db for later use
-                const conn = getConnection();
+                const conn = await db.getConnection('default');
                 (async (conn) => {
                   let campaignRepository = conn.getRepository(Campaign);
                   let campaign = new Campaign();

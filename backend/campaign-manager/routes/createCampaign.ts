@@ -20,16 +20,6 @@ export interface CreateCampaignRequest {
 }
 
 export const createCampaign = async (ctx: CreateCampaignRequest) => {
-
-//   console.log("receive the request!!!!!!!!" + ctx.data.oracleAddr);
-//   console.log(ctx.data.oracleAddr,
-//     ctx.data.gameId,
-//     ctx.data.teamId0,
-//     ctx.data.teamId1,
-//     moneyLine2contractOdds(ctx.data.team0MoneyLine),
-//     moneyLine2contractOdds(ctx.data.team1MoneyLine),
-//     moneyLine2contractOdds(ctx.data.drawMoneyLine))
-  console.log(factory.getFactoryAddress());
   // should be admin endpoint
   let tx = await factory.createCampaign(
     ctx.data.oracleAddr,
@@ -40,8 +30,8 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
     moneyLine2contractOdds(ctx.data.team1MoneyLine),
     moneyLine2contractOdds(ctx.data.drawMoneyLine)
   );
-
   console.log(tx);
+
   // wait for tx to be confirmed
   // number of time to retry
   // total wait 4 * 5 = 20s
