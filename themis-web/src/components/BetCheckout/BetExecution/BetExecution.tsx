@@ -2,8 +2,7 @@ import { Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { BetCheckoutState } from "../../../interfaces/BetCheckoutState";
 import { MatchesState } from "../../../interfaces/MatchesState";
-import { convertOddsToString } from "../../../interfaces/TeamOdds";
-import { getTeamOdds } from "../../../selectors/TeamOddsSelectors";
+import { getTeamOdds } from "../../../redux/selectors/TeamOddsSelectors";
 import * as utils from '../../../utils';
 
 interface BetExecutionProp {

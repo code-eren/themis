@@ -4,7 +4,7 @@ import React from "react";
 import { BetCheckoutState } from "../../../interfaces/BetCheckoutState";
 import { MatchesState } from "../../../interfaces/MatchesState";
 import { TeamOdds, convertOddsToString } from "../../../interfaces/TeamOdds";
-import { getTeamOdds } from '../../../selectors/TeamOddsSelectors';
+import { getTeamOdds } from '../../../redux/selectors/TeamOddsSelectors';
 
 interface BetAmountProps {
     betCheckoutState: BetCheckoutState;

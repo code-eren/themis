@@ -1,7 +1,0 @@
-{
-<<<<<<< HEAD
-  "solidity.compileUsingRemoteVersion": "v0.8.9+commit.e5eed63a"
-=======
-    "git.ignoreLimitWarning": true
->>>>>>> redux-stuff
-}

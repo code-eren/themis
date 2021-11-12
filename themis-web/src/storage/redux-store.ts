@@ -1,7 +1,7 @@
 import { Match } from '../interfaces/Match';
 import { BetCheckoutForm } from '../interfaces/BetCheckoutForm';
 import { createStore } from 'redux';
-import reducers from '../reducers';
+import reducers from '../redux/reducers';
 
 export const storeBet = (bet: Match, betCheckoutForm: BetCheckoutForm) => {
   let matchId = JSON.stringify(bet);

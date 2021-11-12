@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { MoralisProvider } from 'react-moralis';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import reducers from './reducers';
+import reducers from './redux/reducers';
 import { store } from './storage/redux-store';
 
 const moralisCreds = {

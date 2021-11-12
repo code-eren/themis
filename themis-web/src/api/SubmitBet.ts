@@ -1,5 +1,5 @@
-import { setLoading, submit } from '../actions/BetCheckoutActions';
-import { addBet } from '../actions/UserBetsActions';
+import { setLoading } from '../redux/actions/BetCheckoutActions';
+import { addBet } from '../redux/actions/UserBetsActions';
 import { BetCheckoutState } from '../interfaces/BetCheckoutState';
 
 export const submitBet = (betCheckoutState: BetCheckoutState) => {

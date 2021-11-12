@@ -24,7 +24,7 @@ export const localSetup = {
 const kovanjsonrpcprovider = new providers.JsonRpcProvider(
   process.env.KOVAN_API
 );
-console.log(process.env);
+
 const privatekey = fs
   .readFileSync(
     process.env.PATH_TO_PK === undefined ? 'default' : process.env.PATH_TO_PK
