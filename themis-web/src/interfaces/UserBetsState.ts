@@ -1,6 +1,6 @@
-import { Bet } from "./Bet";
+import { Bet } from './Bet';
 
 export interface UserBetsState {
-    bets: Bet[];
-    error: string;
+  bets: Bet[];
+  error: string;
 }

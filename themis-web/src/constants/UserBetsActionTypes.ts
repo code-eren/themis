@@ -1,4 +1,4 @@
 export enum UserBetsActionTypes {
-    ADD_BET = "ADD_BET",
-    REFRESH = "REFRESH",
+  ADD_BET = 'ADD_BET',
+  REFRESH = 'REFRESH'
 }

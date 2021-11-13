@@ -7,13 +7,13 @@ import { UserBetsState } from '../interfaces/UserBetsState';
 import { MatchesState } from '../interfaces/MatchesState';
 
 export interface State {
-    betCheckout: BetCheckoutState;
-    userBets: UserBetsState;
-    matches: MatchesState;
+  betCheckout: BetCheckoutState;
+  userBets: UserBetsState;
+  matches: MatchesState;
 }
 
 export default combineReducers<State>({
-    betCheckout,
-    userBets,
-    matches, 
+  betCheckout,
+  userBets,
+  matches
 });
