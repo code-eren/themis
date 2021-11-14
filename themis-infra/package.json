@@ -33,6 +33,7 @@
     "reflect-metadata": "^0.1.13",
     "server": "^1.0.36",
     "sqlite3": "^5.0.2",
+    "truffle": "^5.4.19",
     "typeorm": "^0.2.40"
   },
   "devDependencies": {
