@@ -26,6 +26,7 @@ contract CampaignFactory {
 
     function createCampaign(
         address _oracle,
+        uint256 _interval,
         uint256 _gameId,
         uint256 _teamId0,
         uint256 _teamId1,
@@ -36,6 +37,7 @@ contract CampaignFactory {
         address clone = Clones.clone(implementationContract);
         Campaign(payable(clone)).initialize(
             _oracle,
+            _interval,
             _gameId,
             _teamId0,
             _teamId1,

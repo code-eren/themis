@@ -1,11 +1,15 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 
 pragma solidity >=0.4.22 <0.9.0;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
-import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 
-contract Campaign is ChainlinkClient {
+interface KeeperCompatibleInterface {
+    function checkUpkeep(bytes calldata checkData) external returns (bool upkeepNeeded, bytes memory performData);
+    function performUpkeep(bytes calldata performData) external;
+}
+
+contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     using Chainlink for Chainlink.Request;
 
     uint256 private constant ORACLE_PAYMENT = 1 * LINK_DIVISIBILITY;
@@ -22,11 +26,10 @@ contract Campaign is ChainlinkClient {
     uint256 public odds1; // odd that team1 wins 4.1 -> 410 , bid 1, get 4.1 back
     uint256 public oddsDraw; // odd of draw wins 3   -> 300 , bid 1, get 3 back
 
-    event RequestScoreFulfilled(
-        bytes32 indexed requestId,
-        uint256 indexed homescore,
-        uint256 indexed awayscore
-    );
+    // Use an interval in seconds and a timestamp to slow execution of Upkeep
+    uint public interval;
+    uint public counter;    // Public counter variable
+    uint public lastTimeStamp;    
 
     struct Bid {
         uint256 odd;
@@ -41,17 +44,23 @@ contract Campaign is ChainlinkClient {
 
     mapping(address => Bidder) addr2bidder;
 
+    uint256 public winnedTeamId;
+    bool public fulfilled; //whether the data is fulfilled
+
     modifier isOwner() {
         require(msg.sender == owner, "caller is not owner");
         _;
     }
 
-
-    uint256 public winnedTeamId;
-    bool public fulfilled; //whether the data is fulfilled
+    event RequestScoreFulfilled(
+        bytes32 indexed requestId,
+        uint256 indexed homescore,
+        uint256 indexed awayscore
+    );
 
     function initialize(
         address oracle,
+        uint256 _interval,
         uint256 _gameId,
         uint256 _teamId0,
         uint256 _teamId1,
@@ -67,8 +76,22 @@ contract Campaign is ChainlinkClient {
         odds0 = _initialOdds0;
         odds1 = _initialOdds1;
         oddsDraw = _drawodds;
+        interval = _interval;
+        lastTimeStamp = block.timestamp;
+        counter = 0;
         setPublicChainlinkToken();
         setChainlinkOracle(oracle);
+    }
+
+    function checkUpkeep(bytes calldata checkData) external view override returns (bool upkeepNeeded, bytes memory performData) {
+        upkeepNeeded = (block.timestamp - lastTimeStamp) > interval;
+        performData = checkData;
+    }
+
+    function performUpkeep(bytes calldata performData) external override {
+        lastTimeStamp = block.timestamp;
+        counter = counter + 1;
+        performData;
     }
 
     // TODO: should be called/triggered by keeper

@@ -1,4 +1,4 @@
-//Just a temporary test file
+// Just a temporary test file
 
 const {getContract} = require("../utils/utility.js");
 

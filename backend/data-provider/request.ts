@@ -113,6 +113,7 @@ export async function querySchedule(date: string) {
           await axios
             .post('http://localhost:8090/createCampaign', {
               oracleAddr: '0xC25d00698c4c48557B363F35AFe09d8f7907296c',
+              interval: 15,
               gameId: schedule['GameId'],
               teamId0: schedule['HomeTeamId'],
               teamId1: schedule['AwayTeamId'],

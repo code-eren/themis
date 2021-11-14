@@ -32,3 +32,8 @@ server({ port: 8070 }, cors, [
 server({ security: { csrf: false }, port: 8090 }, cors, [
   post('/createCampaign', createCampaign)
 ]);
+
+// private port
+server({ security: { csrf: false }, port: 8060 }, cors, [
+  post('/register', createCampaign)
+]);

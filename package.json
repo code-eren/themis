@@ -38,6 +38,7 @@
     "@openzeppelin/cli": "^2.8.2",
     "@openzeppelin/truffle-upgrades": "^1.10.0",
     "@types/server": "^1.0.4",
-    "prettier": "^2.4.1"
+    "prettier": "^2.4.1",
+    "truffle-plugin-verify": "^0.5.18"
   }
 }
