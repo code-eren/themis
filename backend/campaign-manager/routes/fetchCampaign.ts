@@ -1,7 +1,6 @@
 import { status } from 'server/reply';
 import { Campaign } from '../../db/entity/campaign';
 import { Database } from '../../db/db';
-import { getConnection } from 'typeorm';
 
 export interface FetchCampaignByGameIdRequest {
   data: {
