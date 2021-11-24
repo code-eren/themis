@@ -51,7 +51,7 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
   if (confirmed) {
     let deployedAddr = await factory.getAddress(ctx.data.gameId);
     // TODO register upkeep for this deployed contract
-   
+    
     
     return status(200).json({
       deployedAddr: deployedAddr

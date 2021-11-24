@@ -25,6 +25,7 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     uint256 public odds0; // odd that team0 wins 1.1 -> 110 , bid 1, get 1.1 back
     uint256 public odds1; // odd that team1 wins 4.1 -> 410 , bid 1, get 4.1 back
     uint256 public oddsDraw; // odd of draw wins 3   -> 300 , bid 1, get 3 back
+    uint256 public expectedFulfillTime; // expectedFulfillTime to fulfill data
 
     // Use an interval in seconds and a timestamp to slow execution of Upkeep
     uint public interval;
@@ -67,7 +68,8 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         uint256 _initialOdds0,
         uint256 _initialOdds1,
         uint256 _drawodds,
-        address _owner
+        address _owner,
+        uint256 _expectedFulfillTime
     ) external {
         owner = _owner;
         gameId = _gameId;
@@ -76,6 +78,7 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         odds0 = _initialOdds0;
         odds1 = _initialOdds1;
         oddsDraw = _drawodds;
+        expectedFulfillTime = _expectedFulfillTime;
         interval = _interval;
         lastTimeStamp = block.timestamp;
         counter = 0;
@@ -84,13 +87,15 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     }
 
     function checkUpkeep(bytes calldata checkData) external view override returns (bool upkeepNeeded, bytes memory performData) {
-        upkeepNeeded = (block.timestamp - lastTimeStamp) > interval;
+        upkeepNeeded = !fulfilled && block.timestamp > expectedFulfillTime && (block.timestamp - lastTimeStamp) > interval;
+        
         performData = checkData;
     }
 
     function performUpkeep(bytes calldata performData) external override {
         lastTimeStamp = block.timestamp;
         counter = counter + 1;
+        requestScore("7bf0064504c04021a43b9ebadddfedfb");
         performData;
     }
 
