@@ -20,7 +20,8 @@ export class CampaignFactory {
     teamid1: number,
     odds0: number,
     odds1: number,
-    draw: number
+    draw: number, 
+    checkTime: number
   ) {
     return await this.campaignFactory.createCampaign(
       oracle_addr,
@@ -30,7 +31,8 @@ export class CampaignFactory {
       teamid1,
       odds0,
       odds1,
-      draw
+      draw, 
+      checkTime
     );
   }
 
@@ -44,7 +46,8 @@ export class CampaignFactory {
 
   /**
    * verify the implementation contract on kovan
-   * neet to be called every time a new factory is deployed
+   * neet to be called every time a new factory is deployed,
+   * now automatically verified after deployment
    */
   async verifyImplementationContract() {
     let deployedAddr = await this.getImplementationContractAddr();

@@ -2,6 +2,7 @@ import { CampaignFactory } from '../../factory';
 import { status } from 'server/reply';
 import { delay, checkTransactionConfirmed } from '../../../utils/utility';
 import { moneyLine2contractOdds } from '../../../utils/math';
+import { register } from '../../keeper-registry/register';
 
 // global data
 // map from sport to factory later when support mulitple support
@@ -17,6 +18,7 @@ export interface CreateCampaignRequest {
     team0MoneyLine: number;
     team1MoneyLine: number;
     drawMoneyLine: number;
+    expectedFulfillTime: number;
   };
 }
 
@@ -30,7 +32,8 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
     ctx.data.teamId1,
     moneyLine2contractOdds(ctx.data.team0MoneyLine),
     moneyLine2contractOdds(ctx.data.team1MoneyLine),
-    moneyLine2contractOdds(ctx.data.drawMoneyLine)
+    moneyLine2contractOdds(ctx.data.drawMoneyLine),
+    ctx.data.expectedFulfillTime,
   );
   console.log(tx);
 
@@ -50,8 +53,10 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
   }
   if (confirmed) {
     let deployedAddr = await factory.getAddress(ctx.data.gameId);
-    // TODO register upkeep for this deployed contract
-    
+    // TODO test it! register upkeep for this deployed contract
+    let res = await register("wuzhengxun@outlook.com", "upkeep", deployedAddr, 200000, 25)
+    // TODO: error handling here
+    console.log(res)
     
     return status(200).json({
       deployedAddr: deployedAddr
