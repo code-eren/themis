@@ -1,10 +1,17 @@
+import { BetStatus } from './../../interfaces/Bet';
 import { UserBetsActionTypes } from "../constants/UserBetsActionTypes";
 import { BetCheckoutState } from "../../interfaces/BetCheckoutState";
 import { dispatch } from "../../storage/redux-store";
 
-export interface AddBetAction {
-    type: typeof UserBetsActionTypes.ADD_BET;
+export interface DraftBetAction {
+    type: typeof UserBetsActionTypes.DRAFT_BET;
     bet: BetCheckoutState;
+}
+
+export interface SetBetStatusAction {
+    type: typeof UserBetsActionTypes.SET_BET_STATUS,
+    betID: string;
+    betStatus: BetStatus;
 }
 
 export interface RefreshAction {
@@ -12,11 +19,17 @@ export interface RefreshAction {
 }
 
 export type UserBetsAction =
-    AddBetAction | RefreshAction;
+    DraftBetAction | SetBetStatusAction | RefreshAction;
 
-export const addBet = (bet: BetCheckoutState): AddBetAction => dispatch({
-    type: UserBetsActionTypes.ADD_BET,
+export const draftBet = (bet: BetCheckoutState): DraftBetAction => dispatch({
+    type: UserBetsActionTypes.DRAFT_BET,
     bet
+});
+
+export const setBetStatus = (betID: string, betStatus: BetStatus) => dispatch({
+    type: UserBetsActionTypes.SET_BET_STATUS,
+    betID,
+    betStatus
 });
 
 export const refresh = (): RefreshAction => ({

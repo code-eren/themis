@@ -4,23 +4,28 @@ import { MatchesTable } from '../MatchesTable/MatchesTable';
 import { MatchesState } from '../../interfaces/MatchesState';
 import BetCheckoutContainer from '../../containers/BetCheckoutContainer';
 import { BetCheckoutState } from '../../interfaces/BetCheckoutState';
-import { DispatchProp } from 'react-redux';
+import { Match } from '../../interfaces/Match';
+import { CircularProgress } from '@mui/material';
 
 export interface AllMatchesProps {
     matchesState: MatchesState;
     betCheckoutState: BetCheckoutState;
     selectMatch: (matchID: string) => void;
     onCancel: () => void;
+    setMatches: (matches: Match[]) => void;
+    setLoading: (loading: boolean) => void;
 }
 
 export function AllMatches(props: AllMatchesProps) {
+    const result = props.matchesState.loading ? <CircularProgress/> :
+    <MatchesTable matches={props.matchesState.matches} onMatchClicked={props.selectMatch} />;
     return (
         <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
             <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
                 <Typography component="h1" variant="h4" align="center">
                     Matches
                 </Typography>
-                <MatchesTable matches={props.matchesState.matches} onMatchClicked={props.selectMatch} />
+                { result }
             </Paper>
             <Dialog onClose={() => props.onCancel()} open={props.betCheckoutState.matchID !== ""}>
                 {

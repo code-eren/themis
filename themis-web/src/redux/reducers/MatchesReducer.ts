@@ -2,49 +2,28 @@ import { MatchesAction } from "../actions/MatchesActions";
 import { MatchActionType } from "../constants/MatchesActionTypes";
 import { MatchesState } from "../../interfaces/MatchesState";
 
-const initialState : MatchesState = {
-    matches: [
-        {
-            ID: "m1",
-            away: {
-                team: {
-                    ID: "t1",
-                    shortName: "BRA",
-                    fullName: "Brazil"
-                },
-                odds: -300
-            },
-            home: {
-                team: {
-                    ID: "t2",
-                    shortName: "CHI",
-                    fullName: "China",
-                },
-                odds: +200
-            },
-            tie: {
-                team: {
-                    ID: "t3",
-                    shortName: "TIE",
-                    fullName: "Tie"
-                },
-                odds: +100
-            },
-            startTimestamp: 1636083147162,
-        }
-    ],
+export const initialState : MatchesState = {
+    matches: [],
     error: "",
+    loading: false
 };
 
-const MatchesStateReducer = (state:MatchesState=initialState, action: MatchesAction): MatchesState => {
+export const reducer = (state:MatchesState=initialState, action: MatchesAction): MatchesState => {
     switch (action.type) {
-        case MatchActionType.FETCH_MATCHES: {
-            return state;
+        case MatchActionType.SET_MATCHES: {
+            return {
+                ...state,
+                matches: action.matches
+            };
+        }
+        case MatchActionType.SET_LOADING: {
+            return {
+                ...state,
+                loading: action.loading
+            };
         }
         default: {
             return state;
         }
     }
 };
-
-export default MatchesStateReducer;

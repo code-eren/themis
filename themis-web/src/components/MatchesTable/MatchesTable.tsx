@@ -7,7 +7,6 @@ import {
     TableCell
 } from '@mui/material';
 import { Match } from '../../interfaces/Match';
-import { convertOddsToString } from '../../interfaces/TeamOdds';
 import * as utils from '../../utils';
 
 interface MatchesTableProps {

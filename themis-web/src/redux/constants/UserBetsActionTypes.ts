@@ -1,4 +1,5 @@
 export enum UserBetsActionTypes {
-    ADD_BET = "ADD_BET",
+    DRAFT_BET = "DRAFT_BET",
+    SET_BET_STATUS = "SET_BET_STATUS",
     REFRESH = "REFRESH",
 }

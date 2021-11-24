@@ -49,10 +49,10 @@ export function NavBar() {
                 {
                     !isAuthenticated ?
                     <Typography variant="inherit" color="inherit" sx={{cursor: "pointer"}} onClick={handleLogin}>
-                        Login
+                        CONNECT WALLET
                     </Typography> :
                     <Typography variant="inherit" color="inherit" sx={{cursor: "pointer"}} onClick={handleLogout}>
-                        Logout
+                        DISCONNECT WALLET
                     </Typography>
                 }
                 </Stack>

@@ -1,23 +1,30 @@
+import { BetStatus } from './../../interfaces/Bet';
 import { UserBetsState } from "../../interfaces/UserBetsState";
 import { UserBetsAction } from "../actions/UserBetsActions";
 import { UserBetsActionTypes } from "../constants/UserBetsActionTypes";
+import {v4 as uuidv4} from 'uuid';
 
-const initialState: UserBetsState = {
+export const initialState: UserBetsState = {
     bets: [],
     error: ""
 };
 
-const UserBetsReducer = (state=initialState, action: UserBetsAction): UserBetsState => {
+export const reducer = (state=initialState, action: UserBetsAction): UserBetsState => {
     switch (action.type) {
-        case UserBetsActionTypes.ADD_BET: {
-            state.bets.push({
-                ID: "b" + state.bets.length.toString(),
+        case UserBetsActionTypes.DRAFT_BET: {
+            const bets = state.bets.slice();
+            bets.push({
+                ID: uuidv4(),
                 matchID: action.bet.matchID,
                 teamID: action.bet.teamID,
                 bidAmount: action.bet.bidAmount,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                status: BetStatus.Drafted
             });
-            return state;
+            return {
+                ...state,
+                bets,
+            };
         }
         case UserBetsActionTypes.REFRESH: {
             return state;
@@ -27,5 +34,3 @@ const UserBetsReducer = (state=initialState, action: UserBetsAction): UserBetsSt
         }
     }
 }
-
-export default UserBetsReducer;

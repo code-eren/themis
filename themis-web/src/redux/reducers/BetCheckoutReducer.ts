@@ -10,7 +10,7 @@ export const initialState : BetCheckoutState = {
     loading: false
 };
 
-const BetCheckoutReducer = (state=initialState, action: BetCheckoutAction): BetCheckoutState => {
+export const reducer = (state=initialState, action: BetCheckoutAction): BetCheckoutState => {
     switch (action.type) {
         case BetCheckoutActionTypes.SELECT_MATCH: {
             console.log("error:")
@@ -81,5 +81,3 @@ export const isValidBetCheckoutState = (bet: BetCheckoutState): boolean => {
     return bet.teamID !== "" && bet.matchID !== "" &&
         isValidBidAmount(bet.bidAmount) && bet.error === ""
 };
-
-export default BetCheckoutReducer;

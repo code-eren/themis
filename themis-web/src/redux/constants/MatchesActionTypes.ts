@@ -1,3 +1,4 @@
 export enum MatchActionType {
-    FETCH_MATCHES = "FETCH_MATCHES",
+    SET_MATCHES = "SET_MATCHES",
+    SET_LOADING = "SET_LOADING",
 }

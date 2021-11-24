@@ -8,8 +8,18 @@ import AllMatches from './containers/AllMatchesContainer';
 import { Home } from './components/Home/Home';
 import { MyBets } from './components/MyBets/MyBets';
 import { NavBar } from './components/NavBar/NavBar';
+import * as api from './campaign-manager-api';
+import { useEffect } from 'react';
+import { setLoading, setMatches } from './redux/actions/MatchesActions';
 
 function App() {
+  useEffect(() => {
+    setLoading();
+    api.getMatches().then((matches) => {
+      setMatches(matches);
+      setLoading(false);
+    });
+  });
   return (
     <Router>
       <NavBar/>
