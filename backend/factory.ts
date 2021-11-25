@@ -7,9 +7,18 @@ import { getContract } from '../utils/utility';
 // An interface layer to interact with campaignFactory
 export class CampaignFactory {
   campaignFactory: Contract;
+  implementationVerified: boolean;
   // later scale to different sports type, should have different factory type
   constructor(net: string) {
     this.campaignFactory = getContract('CampaignFactory', net);
+  }
+
+  // verify the implementation contract of the factory
+  async init() {
+    if(!this.implementationVerified){
+      await this.verifyImplementationContract()
+      this.implementationVerified = true
+    }
   }
 
   async createCampaign(
@@ -47,7 +56,6 @@ export class CampaignFactory {
   /**
    * verify the implementation contract on kovan
    * neet to be called every time a new factory is deployed,
-   * now automatically verified after deployment
    */
   async verifyImplementationContract() {
     let deployedAddr = await this.getImplementationContractAddr();
