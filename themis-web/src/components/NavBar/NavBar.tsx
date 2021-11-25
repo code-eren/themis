@@ -13,7 +13,7 @@ export function NavBar() {
             name: "Matches"
         },
         {
-            path: "/mybets",
+            path: "/bets",
             name: "My Bets"
         }
     ]

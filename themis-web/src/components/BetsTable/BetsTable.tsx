@@ -9,7 +9,7 @@ import {
 import { Bet } from '../../interfaces/Bet';
 import * as utils from '../../utils';
 
-interface BetsTableProps {
+export interface BetsTableProps {
     bets: Bet[];
     onBetClicked: (betID: string) => void;
 }
