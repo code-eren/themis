@@ -1,16 +1,17 @@
-var axios = require('axios').default;
+const PythonShell = require('python-shell').PythonShell;
+
 
 export async function register(email: string, upkeepName: string, upkeepAddr: string, gasLimit: number, startLink: number) {
-  await axios
-  .post('http://localhost:5000/registerUpkeep', {
-    email: email,
-    upkeepName: upkeepName,
-    upkeepAddr: upkeepAddr,
-    gasLimit: gasLimit,
-    startLink: startLink
-  })
-  .then(async (res) => {
-    return res
+  var options = {
+    mode: 'text',
+    args: [email, upkeepName, upkeepAddr, gasLimit, startLink]
+  };
+  
+  PythonShell.run('register.py', options, function (err, results) {
+    if (err) 
+      throw err;
+    // Results is an array consisting of messages collected during execution
+    console.log('results: %j', results);
   })
 }
 

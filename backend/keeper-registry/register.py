@@ -1,16 +1,11 @@
+import sys
 import time
-from flask import Flask, request
-from flask.wrappers import Request
-
 
 from selenium import webdriver 
 from selenium.webdriver.chrome.options import Options 
 from selenium.webdriver.common.keys import Keys
 
-app = Flask(__name__)
-
-@app.route("/registerUpkeep", methods=['POST'])
-def register():
+def register(email, upkeepName, upkeepAddr, gasLimit, startLink):
     print("registerUpkeep Called")
     options = webdriver.ChromeOptions()
     # A pre-configured google-chrome listerning on port 9222
@@ -22,18 +17,6 @@ def register():
     while not main_window_handle:
         main_window_handle = driver.current_window_handle
 
-    request_data = request.get_json()
-
-    email = request_data['email']
-    upkeepName = request_data['upkeepName']
-    upkeepAddr = request_data['upkeepAddr']
-    gasLimit = request_data['gasLimit']
-    startLink = request_data['startLink']
-    # email = "wuzhengxun@outlook.com"
-    # upkeepName = "dataKeeper"
-    # upkeepAddr = "0x016d6953cFC0af7e1282b3B9b5d3a0eAAB15bf27"
-    # gasLimit = 200000
-    # startLink = 20
     field_email = driver.find_element_by_xpath('//*[@id="emailAddress"]')
     field_email.send_keys(email)
     field_upkeepname = driver.find_element_by_xpath('//*[@id="name"]')
@@ -71,8 +54,4 @@ def register():
     # driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[2]').click()
 
 
-
-if __name__ == '__main__':
-    # run app in debug mode on port 5000
-    app.run(debug=True, port=5000)
-
+register(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
