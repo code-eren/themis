@@ -87,19 +87,22 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     }
 
     function checkUpkeep(bytes calldata checkData) external view override returns (bool upkeepNeeded, bytes memory performData) {
+        // upkeep needed if 
+        // 1. game result hasn't been fulfilled
+        // 2. game result is ready for fetching
+        // 3. periodically check whether data is ready 
         upkeepNeeded = !fulfilled && block.timestamp > expectedFulfillTime && (block.timestamp - lastTimeStamp) > interval;
-        
         performData = checkData;
     }
 
     function performUpkeep(bytes calldata performData) external override {
         lastTimeStamp = block.timestamp;
         counter = counter + 1;
+        // preset jobId 
         requestScore("7bf0064504c04021a43b9ebadddfedfb");
         performData;
     }
 
-    // TODO: should be called/triggered by keeper
     function requestScore(string memory _jobId) public isOwner {
         Chainlink.Request memory req = buildChainlinkRequest(
             stringToBytes32(_jobId),

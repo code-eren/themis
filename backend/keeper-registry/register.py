@@ -53,5 +53,5 @@ def register(email, upkeepName, upkeepAddr, gasLimit, startLink):
     print(driver.window_handles)
     # driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[2]').click()
 
-
+# register a keeper for a campaign from piped-in data
 register(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
