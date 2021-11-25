@@ -1,5 +1,7 @@
 import { getContract, sendToken, delay } from '../utils/utility';
 import { CampaignFactory } from './factory';
+import { register } from './keeper-registry/register';
+
 
 // assume campaignFactory has been deployed on kovan
 (async () => {
@@ -41,20 +43,9 @@ import { CampaignFactory } from './factory';
   console.log(await newCampaign.awayscore());
 
   // register the keeper
-  var axios = require('axios').default;
+  let res = await register("wuzhengxun@outlook.com", "upkeep", newAddress, 200000, 25)
 
-  await axios
-  .post('http://localhost:5000/registerUpkeep', {
-    email: 'wuzhengxun@outlook.com',
-    upkeepName: "upkeep",
-    upkeepAddr: "0xce603D6264e40e6D4Fad35AFcCEEF1Cd68c7a7C7",
-    gasLimit: 200000,
-    startLink: 25
-  })
-  .then(async (res) => {
-    console.log(res)
-  })
-
+  console.log(res)
   // wait for keeper to execute
   await delay(10000);
   

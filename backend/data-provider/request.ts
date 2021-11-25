@@ -1,5 +1,4 @@
 var axios = require('axios').default;
-import { getConnection } from 'typeorm';
 import { Schedule } from '../db/entity/schedule';
 import { Campaign } from '../db/entity/campaign';
 import { Database } from '../db/db';
