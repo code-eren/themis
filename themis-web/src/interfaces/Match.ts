@@ -6,4 +6,5 @@ export interface Match {
   home: TeamOdds;
   tie: TeamOdds;
   startTimestamp: number;
+  contractAddress: string;
 }

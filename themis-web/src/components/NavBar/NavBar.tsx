@@ -6,7 +6,7 @@ import { Link, Stack } from '@mui/material';
 import { useMoralis } from 'react-moralis';
 
 export function NavBar() {
-    const { authenticate, logout, isAuthenticated } = useMoralis();
+    const { authenticate, logout, isAuthenticated, enableWeb3 } = useMoralis();
     const routes = [
         {
             path: "/matches",
@@ -20,6 +20,7 @@ export function NavBar() {
     
     const handleLogin = () => {
         authenticate();
+        enableWeb3();
     };
 
     const handleLogout = () => {

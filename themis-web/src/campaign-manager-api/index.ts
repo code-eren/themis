@@ -5,7 +5,7 @@ import { BetCheckoutState } from '../interfaces/BetCheckoutState';
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://c6c2-38-122-226-212.ngrok.io/',
+  baseURL: 'http://f471-38-122-226-212.ngrok.io/',
   timeout: 1000,
 });
 
@@ -25,31 +25,32 @@ export const getMatches = () => {
         const timestampMillis = timestampDate.getTime();
         return {
           ID: camp.Campaign_Id.toString(),
-            away: {
-              team: {
-                ID: camp.schedule_AwayTeamId.toString(),
-                fullName: camp.schedule_AwayTeamName,
-                shortName: camp.schedule_AwayTeamKey
-              },
-              odds: camp.schedule_AwayTeamMoneyLine
+          away: {
+            team: {
+              ID: camp.schedule_AwayTeamId.toString(),
+              fullName: camp.schedule_AwayTeamName,
+              shortName: camp.schedule_AwayTeamKey
             },
-            home: {
-              team: {
-                ID: camp.schedule_HomeTeamId.toString(),
-                fullName: camp.schedule_HomeTeamName,
-                shortName: camp.schedule_HomeTeamKey
-              },
-              odds: camp.schedule_HomeTeamMoneyLine
+            odds: camp.schedule_AwayTeamMoneyLine
+          },
+          home: {
+            team: {
+              ID: camp.schedule_HomeTeamId.toString(),
+              fullName: camp.schedule_HomeTeamName,
+              shortName: camp.schedule_HomeTeamKey
             },
-            tie: {
-              team: {
-                ID: "tie",
-                fullName: "tie",
-                shortName: "TIE"
-              },
-              odds: camp.schedule_DrawMoneyLine
+            odds: camp.schedule_HomeTeamMoneyLine
+          },
+          tie: {
+            team: {
+              ID: "tie",
+              fullName: "tie",
+              shortName: "TIE"
             },
-            startTimestamp: timestampMillis
+            odds: camp.schedule_DrawMoneyLine
+          },
+          startTimestamp: timestampMillis,
+          contractAddress: camp.Campaign_DeployedAddress
         };
       });
       return matches;
