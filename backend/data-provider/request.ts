@@ -119,7 +119,7 @@ export async function querySchedule(date: string) {
               team0MoneyLine: schedule['HomeTeamMoneyLine'],
               team1MoneyLine: schedule['AwayTeamMoneyLine'],
               drawMoneyLine: schedule['DrawMoneyLine'],
-              expectedFulfillTime: 0, // TODO need to get from data provider rather than hardcoded
+              expectedFulfillTime: 0 // TODO need to get from data provider rather than hardcoded
             })
             .then(async (res) => {
               console.log(`statusCode: ${res.status}`);

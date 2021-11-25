@@ -2,7 +2,6 @@ import { getContract, sendToken, delay } from '../utils/utility';
 import { CampaignFactory } from './factory';
 import { register } from './keeper-registry/register';
 
-
 // assume campaignFactory has been deployed on kovan
 (async () => {
   // get the deployed campaignFactory instance
@@ -43,12 +42,18 @@ import { register } from './keeper-registry/register';
   console.log(await newCampaign.awayscore());
 
   // register the keeper
-  let res = await register("wuzhengxun@outlook.com", "upkeep", newAddress, 200000, 25)
+  let res = await register(
+    'wuzhengxun@outlook.com',
+    'upkeep',
+    newAddress,
+    200000,
+    25
+  );
 
-  console.log(res)
+  console.log(res);
   // wait for keeper to execute
   await delay(10000);
-  
+
   console.log(await newCampaign.homescore());
   console.log(await newCampaign.awayscore());
 })();

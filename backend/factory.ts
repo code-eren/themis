@@ -1,5 +1,5 @@
 import { Contract } from 'ethers';
-import { exec } from "child_process";
+import { exec } from 'child_process';
 
 import { getContract } from '../utils/utility';
 
@@ -20,7 +20,7 @@ export class CampaignFactory {
     teamid1: number,
     odds0: number,
     odds1: number,
-    draw: number, 
+    draw: number,
     checkTime: number
   ) {
     return await this.campaignFactory.createCampaign(
@@ -31,7 +31,7 @@ export class CampaignFactory {
       teamid1,
       odds0,
       odds1,
-      draw, 
+      draw,
       checkTime
     );
   }
@@ -51,18 +51,21 @@ export class CampaignFactory {
    */
   async verifyImplementationContract() {
     let deployedAddr = await this.getImplementationContractAddr();
-    const absPath2projectroot = "/mnt/c/users/16073/desktop/clhackathon/themis";
-    exec(`cd ${absPath2projectroot} && truffle run verify Campaign@${deployedAddr} --network kovan --debug`, (error, stdout, stderr) => {
-      if (error) {
+    const absPath2projectroot = '/mnt/c/users/16073/desktop/clhackathon/themis';
+    exec(
+      `cd ${absPath2projectroot} && truffle run verify Campaign@${deployedAddr} --network kovan --debug`,
+      (error, stdout, stderr) => {
+        if (error) {
           console.log(`error: ${error.message}`);
           return;
-      }
-      if (stderr) {
+        }
+        if (stderr) {
           console.log(`stderr: ${stderr}`);
           return;
+        }
+        console.log(`stdout: ${stdout}`);
       }
-      console.log(`stdout: ${stdout}`);
-    });
+    );
   }
 
   async getAddress(_gameId: number) {

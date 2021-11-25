@@ -11,7 +11,7 @@ let factory = new CampaignFactory('kovan');
 export interface CreateCampaignRequest {
   data: {
     oracleAddr: string;
-    interval: number,
+    interval: number;
     gameId: number;
     teamId0: number;
     teamId1: number;
@@ -33,7 +33,7 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
     moneyLine2contractOdds(ctx.data.team0MoneyLine),
     moneyLine2contractOdds(ctx.data.team1MoneyLine),
     moneyLine2contractOdds(ctx.data.drawMoneyLine),
-    ctx.data.expectedFulfillTime,
+    ctx.data.expectedFulfillTime
   );
   console.log(tx);
 
@@ -54,10 +54,16 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
   if (confirmed) {
     let deployedAddr = await factory.getAddress(ctx.data.gameId);
     // TODO test it! register upkeep for this deployed contract
-    let res = await register("wuzhengxun@outlook.com", "upkeep", deployedAddr, 200000, 25)
+    let res = await register(
+      'wuzhengxun@outlook.com',
+      'upkeep',
+      deployedAddr,
+      200000,
+      25
+    );
     // TODO: error handling here
-    console.log(res)
-    
+    console.log(res);
+
     return status(200).json({
       deployedAddr: deployedAddr
     });
