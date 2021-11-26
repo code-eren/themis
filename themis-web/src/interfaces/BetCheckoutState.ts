@@ -4,4 +4,6 @@ export interface BetCheckoutState {
   bidAmount: string;
   error: string;
   loading: boolean;
+  finished: boolean;
+  transactionHash: string;
 }

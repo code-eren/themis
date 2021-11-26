@@ -1,6 +1,6 @@
 import { Match } from '../interfaces/Match';
 import { BetCheckoutForm } from '../interfaces/BetCheckoutForm';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import reducers from '../redux/reducers';
 
 export const storeBet = (bet: Match, betCheckoutForm: BetCheckoutForm) => {

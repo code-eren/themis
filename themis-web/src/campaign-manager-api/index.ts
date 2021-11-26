@@ -5,16 +5,9 @@ import { BetCheckoutState } from '../interfaces/BetCheckoutState';
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://f471-38-122-226-212.ngrok.io/',
+  baseURL: 'https://7a7a-38-122-226-212.ngrok.io/',
   timeout: 1000,
 });
-
-export const submitBet = (betCheckoutState: BetCheckoutState) => {
-  setLoading(true);
-  setTimeout(() => {
-    setLoading(false);
-  }, 2000);
-};
 
 export const getMatches = () => {
   return axiosInstance.get<GetCampaignsResponse>('/campaigns').then(

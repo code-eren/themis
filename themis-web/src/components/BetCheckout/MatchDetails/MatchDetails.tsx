@@ -3,22 +3,21 @@ import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { BetCheckoutState } from '../../../interfaces/BetCheckoutState';
 import { TeamOdds, convertOddsToString } from '../../../interfaces/TeamOdds';
-import { MatchesState } from '../../../interfaces/MatchesState';
+import { Match } from '../../../interfaces/Match';
+import { selectSide } from '../../../redux/actions/BetCheckoutActions';
 
 interface MatchDetailsProps {
-    matchesState: MatchesState;
+    match: Match;
     betCheckoutState: BetCheckoutState;
-    onSelectSide: (teamID: string) => void
 }
 
 export function MatchDetails(props: MatchDetailsProps) {
     const [teamOddsSelected, setTeamOddsSelected] = React.useState<TeamOdds|null>(null);
-    const match = props.matchesState.matches.find((match) => match.ID === props.betCheckoutState.matchID);
-    const allTeamOdds = match ? [
-        match.home,
-        match.tie,
-        match.away,
-    ] : [];
+    const allTeamOdds = [
+        props.match.home,
+        props.match.tie,
+        props.match.away,
+    ];
     return (
         <Box sx={{padding: 2}}>
             <Grid container>
@@ -35,7 +34,7 @@ export function MatchDetails(props: MatchDetailsProps) {
                                 sx={{cursor: "pointer", backgroundColor: props.betCheckoutState.teamID === teamOdds.team.ID ? '#ededed' : '#ffffff', ":hover": {
                                     backgroundColor: '#ededed'
                                 }}}
-                                onClick={() => props.onSelectSide(teamOdds.team.ID)}
+                                onClick={() => selectSide(teamOdds.team.ID)}
                             >
                                 <Grid item>
                                     <Typography sx={{fontWeight: teamOddsSelected?.team === teamOdds.team ? 'medium' : 'regular'}} textAlign="center">{teamOdds.team.shortName}</Typography>

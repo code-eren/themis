@@ -8,12 +8,10 @@ export class Contract {
         this.contractAddress = contractAddress;
     }
 
-    useFunction(functionName: string, params?: Record<string, unknown>) {
-        return useWeb3ExecuteFunction({
+    metadata() {
+        return {
             abi: this.abi,
-            contractAddress: this.contractAddress,
-            functionName,
-            params
-        });
+            contractAddress: this.contractAddress
+        };
     }
 }

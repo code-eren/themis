@@ -1,74 +1,72 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, CircularProgress, Link, Chip } from "@mui/material";
 import { Box } from "@mui/system";
 import { BetCheckoutState } from "../../../interfaces/BetCheckoutState";
-import { MatchesState } from "../../../interfaces/MatchesState";
+import { Match } from "../../../interfaces/Match";
 import { getTeamOdds } from "../../../redux/selectors/TeamOddsSelectors";
 import * as utils from '../../../utils';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 interface BetExecutionProp {
+    match: Match;
     betCheckoutState: BetCheckoutState;
-    matchesState: MatchesState;
-    setLoading: (loading: boolean) => void;
 }
 
 export function BetExecution(props: BetExecutionProp) {
-    const sumOfEthCosts = (stringCosts: string[]): string => {
-        let init = 0;
-        for (let i = 0; i < stringCosts.length; i++) {
-            let cost = parseFloat(stringCosts[i]);
-            if (!isNaN(cost) && cost >= 0) {
-                init += cost;
-            }
-        }
-        return init.toString();
-    }
-    const gasCosts = "1.0";
-    const selectedTeamOdds = getTeamOdds(props.betCheckoutState, props.matchesState);
-    return (
-        <Box sx={{padding: 2}}>
+    const selectedTeamOdds = getTeamOdds(props.betCheckoutState, props.match);
+
+    let details = <Grid>
+        <Typography>Please go back and make sure you filled everything correctly.</Typography>
+    </Grid>;
+    
+    if (props.betCheckoutState.loading) {
+        details = <CircularProgress/>
+    } else if (props.betCheckoutState.finished) {
+        details = <Grid>
+            <Typography>
+                Bet has been submitted. You can check out this 
+                bet's status in <Link href="/bets">My Bets</Link> and
+                you can verify on{' '}
+                <Chip
+                    label="Etherscan"
+                    component="a"
+                    href={`https://kovan.etherscan.io/tx/${props.betCheckoutState.transactionHash}`}
+                    target="_blank"
+                    icon={<OpenInNewIcon fontSize="small"/>}
+                    clickable
+                />.
+            </Typography>
+        </Grid>;
+    } else if (selectedTeamOdds !== null) {
+        details = <Grid container spacing={2}>
+            <Grid item xs={12} sx={{margin: 2, marginLeft: 1, marginRight: 1}}>
+                <Typography textAlign="center">
+                    Please take a look at the following details before submitting.
+                </Typography>
+            </Grid>
+            <Grid item xs={5}>
+                <Typography textAlign="right">
+                    {selectedTeamOdds.team.fullName} ({utils.otos(selectedTeamOdds.odds)})
+                </Typography>
+            </Grid>
+            <Grid item xs={5}>
+                <Typography textAlign="right">
+                    {props.betCheckoutState.bidAmount} ETH
+                </Typography>
+            </Grid>
             {
-                selectedTeamOdds !== null ?
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sx={{margin: 2, marginLeft: 1, marginRight: 1}}>
-                        <Typography textAlign="center">
-                            Please take a look at the following details before submitting.
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={5}>
-                        <Typography textAlign="right">
-                            {selectedTeamOdds.team.fullName} ({utils.otos(selectedTeamOdds.odds)})
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={5}>
-                        <Typography textAlign="right">
-                            {props.betCheckoutState.bidAmount} ETH
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={5}>
-                        <Typography textAlign="right">
-                            Gas Fee
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={5}>
-                        <Typography textAlign="right">
-                            {gasCosts} ETH
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={5}>
-                        <Typography textAlign="right" sx={{fontWeight: "bold"}}>
-                            Total
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={5}>
-                        <Typography textAlign="right" sx={{fontWeight: "bold"}}>
-                            {sumOfEthCosts([props.betCheckoutState.bidAmount, gasCosts])} ETH
-                        </Typography>
-                    </Grid>
-                </Grid> :
-                <Grid>
-                    <Typography>Please go back and make sure you filled everything correctly.</Typography>
+                props.betCheckoutState.error &&
+                <Grid item xs={12} sx={{margin: 2, marginLeft: 1, marginRight: 1}}>
+                    <Typography textAlign="center">
+                        There was an error so please retry.
+                        {props.betCheckoutState.error}
+                    </Typography>
                 </Grid>
             }
+        </Grid>
+    }
+    return (
+        <Box sx={{padding: 2}}>
+            { details }
         </Box>
     );
 }

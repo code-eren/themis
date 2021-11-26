@@ -1,69 +1,46 @@
+import React from "react";
 import { Button, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React from "react";
 import { BetAmount } from "./BetAmount/BetAmount";
 import { MatchDetails } from "./MatchDetails/MatchDetails";
 import { BetExecution } from "./BetExecution/BetExecution";
 import { BetCheckoutState } from "../../interfaces/BetCheckoutState";
-import { MatchesState } from "../../interfaces/MatchesState";
 import { useWeb3ExecuteFunction } from "react-moralis";
-import CampaignAbi from '../../abis/Campaign.json';
-import { getMatch } from '../../redux/selectors/MatchSelectors';
-import Moralis from 'moralis';
-import { useMoralis } from 'react-moralis';
+import { CampaignContract } from "../../web3/campaign";
+import { Match } from "../../interfaces/Match";
+import { finalize, setError, submit } from "../../redux/actions/BetCheckoutActions";
 
 export interface BetCheckoutProps {
-    matchesState: MatchesState;
+    match: Match | null;
     betCheckoutState: BetCheckoutState;
-    onSelectSide: (selectedTeamID: string) => void;
-    onEnterBid: (bidAmount: string) => void;
-    onSubmit: () => void;
-    onCancel: () => void;
-    setLoading: (loading: boolean) => void;
 }
 
 export function BetCheckout(props: BetCheckoutProps) {
-    const match = getMatch(props.betCheckoutState, props.matchesState);
-    
     // Moralis hook
-    const {data, error, fetch} = useWeb3ExecuteFunction({
-        abi: CampaignAbi,
-        contractAddress: "0x3856992b6C78fdBF97d9477cb614f97de81F6CB7",
-        functionName: "bid",
-        params: {
-            _teamId: 1
-        }
-    });
-
-    const bidOptions = (betCheckoutState: BetCheckoutState) => {
-        console.log(match?.contractAddress)
-        return {
-            params: {
-                abi: CampaignAbi,
-                contractAddress: match?.contractAddress,
-                functionName: "bid",
-                params: {
-                    _teamId: betCheckoutState.teamID
-                },
-                // // @ts-ignore:next-line
-                // msgValue: Moralis.Units.ETH(betCheckoutState.bidAmount)
-            },
-            onError: console.log,
-            onSuccess: console.log,
-            onComplete: () => console.log("complete")
-        };
-    };
-    
-    const steps = ['Select a side', 'Enter an amount', 'Submit bet'];
+    const { fetch } = useWeb3ExecuteFunction();
     const [currentStep, setCurrentStep] = React.useState(0);
+    if (props.match === null) {
+        return (
+            <></>
+        );
+    }
+    const campaignContract = new CampaignContract(props.match.contractAddress);
+    const steps = ['Select a side', 'Enter an amount', 'Submit bet'];
     const handleNext = () => {
         setCurrentStep((currentStep) => currentStep + 1);
     }
     const handleBack = () => {
         setCurrentStep((currentStep) => currentStep - 1);
     }
-    const handleSubmit = async () => {
-        fetch(bidOptions(props.betCheckoutState));
+    const handleSubmit = () => {
+        const teamId = props.betCheckoutState.teamID;
+        const amount = props.betCheckoutState.bidAmount;
+        submit();
+        fetch({ 
+            params: campaignContract.bid(teamId, amount), 
+            onError: error => setError(error.message),
+            onSuccess: (data: any) => finalize(data.transactionHash)
+        });
     }
 
     const renderStepperPage = (step: number) => {
@@ -71,25 +48,22 @@ export function BetCheckout(props: BetCheckoutProps) {
             case 0:
                 return (
                     <MatchDetails
-                        matchesState={props.matchesState}
+                        match={props.match!}
                         betCheckoutState={props.betCheckoutState}
-                        onSelectSide={props.onSelectSide}
                     />
                 );
             case 1:
                 return (
                     <BetAmount
-                        matchesState={props.matchesState}
+                        match={props.match!}
                         betCheckoutState={props.betCheckoutState}
-                        onBidAmountEntered={props.onEnterBid}
                     />
                 );
             case 2:
                 return (
                     <BetExecution
-                        matchesState={props.matchesState}
+                        match={props.match!}
                         betCheckoutState={props.betCheckoutState}
-                        setLoading={props.setLoading}
                     />
                 );
             default:
@@ -116,16 +90,16 @@ export function BetCheckout(props: BetCheckoutProps) {
                 renderStepperPage(currentStep)
             }
             {
-                currentStep !== 0 &&
-                <Button onClick={handleBack}>Back</Button>
+                currentStep !== 0 && !props.betCheckoutState.finished &&
+                <Button disabled={props.betCheckoutState.loading} onClick={handleBack}>Back</Button>
             }
             {
                 currentStep < steps.length - 1 && 
                 <Button onClick={handleNext}>Next</Button>
             }
             {
-                currentStep === steps.length - 1 &&
-                <Button variant="contained" onClick={handleSubmit}>Submit</Button>
+                currentStep === steps.length - 1 && !props.betCheckoutState.finished &&
+                <Button disabled={props.betCheckoutState.loading} variant="contained" onClick={handleSubmit}>Submit</Button>
             }
         </Box>
     );

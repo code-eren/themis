@@ -29,8 +29,15 @@ export interface SetLoadingAction {
     loading: boolean;
 }
 
-export type BetCheckoutAction = 
-    SelectMatchAction | SelectSideAction | EnterBidAmountAction | CancelAction | SubmitAction | SetLoadingAction;
+export interface FinalizeAction {
+    type: typeof BetCheckoutActionTypes.FINALIZE;
+    transactionHash: string;
+}
+
+export interface SetErrorAction {
+    type: typeof BetCheckoutActionTypes.SET_ERROR;
+    error: string;
+}
 
 export const selectMatch = (selectedMatchID: string): SelectMatchAction => dispatch({
     type: BetCheckoutActionTypes.SELECT_MATCH,
@@ -59,3 +66,17 @@ export const setLoading = (loading: boolean): SetLoadingAction => dispatch({
     type: BetCheckoutActionTypes.SET_LOADING,
     loading: loading,
 });
+
+export const setError = (error: string): SetErrorAction => dispatch({
+    type: BetCheckoutActionTypes.SET_ERROR,
+    error
+});
+
+export const finalize = (transactionHash: string): FinalizeAction => dispatch({
+    type: BetCheckoutActionTypes.FINALIZE,
+    transactionHash
+});
+
+export type BetCheckoutAction = 
+    SelectMatchAction | SelectSideAction | EnterBidAmountAction | CancelAction | SubmitAction 
+    | SetLoadingAction | SetErrorAction | FinalizeAction;

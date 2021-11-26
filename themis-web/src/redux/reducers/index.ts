@@ -30,7 +30,6 @@ export default (
                 bet: { ...state.betCheckout }
             };
             return {
-                ...state,
                 betCheckout: betCheckout.reducer(state.betCheckout, action),
                 userBets: userBets.reducer(state.userBets, userBetsAction),
                 matches: state.matches

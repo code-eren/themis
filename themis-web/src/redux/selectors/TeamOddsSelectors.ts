@@ -1,9 +1,7 @@
 import { BetCheckoutState } from "../../interfaces/BetCheckoutState";
-import { MatchesState } from "../../interfaces/MatchesState";
-import { getMatch } from "./MatchSelectors";
+import { Match } from "../../interfaces/Match";
 
-export const getTeamOdds = (bcs: BetCheckoutState, ms: MatchesState) => {
-    let match = getMatch(bcs, ms);
+export const getTeamOdds = (bcs: BetCheckoutState, match: Match) => {
     if (match === null) {
         return null;
     }

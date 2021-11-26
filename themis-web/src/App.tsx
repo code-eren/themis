@@ -21,20 +21,22 @@ function App() {
     });
   });
   return (
-    <Router>
-      <NavBar/>
-      <Switch>
-        <Route path="/matches">
-          <AllMatches />
-        </Route>
-        <Route path="/bets">
-          <MyBets/>
-        </Route>
-        <Route path="/">
-          <Home/>
-        </Route>
-      </Switch>
-    </Router>
+    <React.Fragment>      
+        <Router>
+          <NavBar/>
+          <Switch>
+            <Route path="/matches">
+              <AllMatches />
+            </Route>
+            <Route path="/bets">
+              <MyBets/>
+            </Route>
+            <Route path="/">
+              <Home/>
+            </Route>
+          </Switch>
+        </Router>
+    </React.Fragment>
   );
 }
 

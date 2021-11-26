@@ -7,21 +7,20 @@ export const initialState : BetCheckoutState = {
     teamID: "",
     bidAmount: "",
     error: "",
-    loading: false
+    loading: false,
+    finished: false,
+    transactionHash: ""
 };
 
 export const reducer = (state=initialState, action: BetCheckoutAction): BetCheckoutState => {
     switch (action.type) {
         case BetCheckoutActionTypes.SELECT_MATCH: {
-            console.log("error:")
-            console.log(state.error);
             if (action.selectedMatchID === "") {
                 return {
                     ...state,
                     error: "Please select a valid match.",
                 };
             }
-            console.log("match selected")
             return {
                 ...initialState,
                 matchID: action.selectedMatchID,
@@ -56,13 +55,28 @@ export const reducer = (state=initialState, action: BetCheckoutAction): BetCheck
             };
         }
         case BetCheckoutActionTypes.SUBMIT: {
-            if (!isValidBetCheckoutState(state)) {
-                return state;
+            return {
+                ...state,
+                loading: true
             }
-            return initialState;
         }
         case BetCheckoutActionTypes.CANCEL: {
             return initialState;
+        }
+        case BetCheckoutActionTypes.SET_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: action.error
+            }
+        }
+        case BetCheckoutActionTypes.FINALIZE: {
+            return {
+                ...state,
+                loading: false,
+                finished: true,
+                transactionHash: action.transactionHash
+            };
         }
         default: {
             return state;
@@ -79,5 +93,5 @@ const isValidBidAmount = (bidAmount: string): boolean => {
 
 export const isValidBetCheckoutState = (bet: BetCheckoutState): boolean => {
     return bet.teamID !== "" && bet.matchID !== "" &&
-        isValidBidAmount(bet.bidAmount) && bet.error === ""
+        isValidBidAmount(bet.bidAmount) && bet.error === "";
 };

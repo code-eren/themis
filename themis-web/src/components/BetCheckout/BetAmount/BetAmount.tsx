@@ -1,15 +1,15 @@
+import React from "react";
 import { Grid, InputAdornment, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React from "react";
 import { BetCheckoutState } from "../../../interfaces/BetCheckoutState";
-import { MatchesState } from "../../../interfaces/MatchesState";
+import { Match } from "../../../interfaces/Match";
 import { TeamOdds, convertOddsToString } from "../../../interfaces/TeamOdds";
 import { getTeamOdds } from '../../../redux/selectors/TeamOddsSelectors';
+import { enterBid } from '../../../redux/actions/BetCheckoutActions';
 
 interface BetAmountProps {
+    match: Match;
     betCheckoutState: BetCheckoutState;
-    matchesState: MatchesState;
-    onBidAmountEntered: (bidAmount: string) => void;
 }
 
 export function BetAmount (props: BetAmountProps) {
@@ -53,7 +53,7 @@ export function BetAmount (props: BetAmountProps) {
                     <Grid xs={12} textAlign="center" sx={{margin: 3}}>
                         <TextField
                             value={props.betCheckoutState.bidAmount}
-                            onChange={(event) => props.onBidAmountEntered(event.target.value)}
+                            onChange={(event) => enterBid(event.target.value)}
                             label="Amount"
                             InputProps={{
                                 endAdornment: <InputAdornment position="end">ETH</InputAdornment>
@@ -64,7 +64,7 @@ export function BetAmount (props: BetAmountProps) {
                         {
                             props.betCheckoutState.bidAmount !== "" 
                             && renderAmountWinningsMessage(
-                                getTeamOdds(props.betCheckoutState, props.matchesState),
+                                getTeamOdds(props.betCheckoutState, props.match),
                                 props.betCheckoutState.bidAmount
                             )
                         }
