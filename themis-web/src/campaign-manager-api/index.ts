@@ -17,7 +17,7 @@ export const getMatches = () => {
         const timestampDate = new Date(camp.schedule_Timestamp);
         const timestampMillis = timestampDate.getTime();
         return {
-          ID: camp.Campaign_Id.toString(),
+          ID: camp.Campaign_GameId.toString(),
           away: {
             team: {
               ID: camp.schedule_AwayTeamId.toString(),

@@ -9,14 +9,14 @@ import { UserBetsState } from '../../interfaces/UserBetsState';
 import { MatchesState } from '../../interfaces/MatchesState';
 import { UserBetsActionTypes } from '../constants/UserBetsActionTypes';
 
-export interface State {
+export interface RootState {
     betCheckout: BetCheckoutState;
     userBets: UserBetsState;
     matches: MatchesState;
 }
 
 export default (
-    state: State={
+    state: RootState={
         betCheckout: betCheckout.initialState,
         userBets: userBets.initialState,
         matches: matches.initialState

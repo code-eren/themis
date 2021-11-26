@@ -1,8 +1,8 @@
 import { connect } from "react-redux";
 import { BetsTable, BetsTableProps } from "../components/BetsTable/BetsTable";
-import { State } from "../redux/reducers";
+import { RootState } from "../redux/reducers";
 
-const mapStateToProps = (state: State): BetsTableProps => ({
+const mapStateToProps = (state: RootState): BetsTableProps => ({
     bets: state.userBets.bets,
     onBetClicked: (id: string) => { console.log("clicked " + id)}
 });
