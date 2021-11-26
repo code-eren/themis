@@ -43,7 +43,7 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         bool bidded;
     }
 
-    mapping(address => Bidder) addr2bidder;
+    mapping(address => Bidder) public addr2bidder;
 
     uint256 public winnedTeamId;
     bool public fulfilled; //whether the data is fulfilled

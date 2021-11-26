@@ -6,7 +6,7 @@ Make code look nicer:
 ```bash
 npm run prettier-format
 ```
-Deploy campaignFactory to kovan:
+In the root directory, deploy campaignFactory to kovan:
 ```bash
 truffle migrate --reset --network kovan -f 2 --to 2 
 ```

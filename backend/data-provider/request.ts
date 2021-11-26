@@ -15,7 +15,7 @@ let api_key = process.env.SPORTSDATAIO_API_KEY;
 let gameIdDeployed = new Set();
 // TODO: should periodically flush to db, persist everytime one round of deployment finishes
 // should also fetch from database
-let startNonce = 500; 
+let startNonce = 500;
 
 const db = new Database();
 
@@ -130,7 +130,7 @@ export async function querySchedule(date: string) {
               team0MoneyLine: schedule['HomeTeamMoneyLine'],
               team1MoneyLine: schedule['AwayTeamMoneyLine'],
               drawMoneyLine: schedule['DrawMoneyLine'],
-              expectedFulfillTime: 0, // TODO need to get from data provider rather than hardcoded
+              expectedFulfillTime: 0 // TODO need to get from data provider rather than hardcoded
               // nonce: startNonce
             })
             .then(async (res) => {

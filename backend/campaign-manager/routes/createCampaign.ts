@@ -39,7 +39,7 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
     moneyLine2contractOdds(ctx.data.team0MoneyLine),
     moneyLine2contractOdds(ctx.data.team1MoneyLine),
     moneyLine2contractOdds(ctx.data.drawMoneyLine),
-    ctx.data.expectedFulfillTime,
+    ctx.data.expectedFulfillTime
     // {
     //   nonce: ctx.data.nonce
     // }
@@ -73,7 +73,7 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
       deployedAddr,
       'kovan'
     );
-    console.log(`5 link sent to ${deployedAddr}`)
+    console.log(`5 link sent to ${deployedAddr}`);
 
     // wait 60s for the transaction to be included
     // TODO add error handling, retry, ...
