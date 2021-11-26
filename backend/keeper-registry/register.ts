@@ -9,7 +9,8 @@ export async function register(
 ) {
   var options = {
     mode: 'text',
-    scriptPath: '/mnt/c/users/16073/desktop/clhackathon/themis/backend/keeper-registry', // should be path to where script lives
+    scriptPath:
+      '/mnt/c/users/16073/desktop/clhackathon/themis/backend/keeper-registry', // should be path to where script lives
     args: [email, upkeepName, upkeepAddr, gasLimit, startLink]
   };
 

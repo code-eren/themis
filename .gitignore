@@ -4,5 +4,6 @@ betmodel/
 .secret
 .pk
 .env
+~/
 .openzeppelin/.session
 .vscode

@@ -14,7 +14,7 @@ TODOs:
 
 ## score-ea
 
-`node index.js` starts external adapter that serves data through bridge from chainlink job 
+`yarn start` starts external adapter that serves data through bridge from chainlink job, default listens on port 8080 
 
 TODOs: 
 - [ ] add multiple data sources and external adapters

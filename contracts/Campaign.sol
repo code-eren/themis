@@ -59,6 +59,10 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         uint256 indexed awayscore
     );
 
+    event Performupkeepcalled(
+        address indexed caller
+    );
+
     function initialize(
         address oracle,
         uint256 _interval,
@@ -91,19 +95,21 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         // 1. game result hasn't been fulfilled
         // 2. game result is ready for fetching
         // 3. periodically check whether data is ready 
-        upkeepNeeded = !fulfilled && block.timestamp > expectedFulfillTime && (block.timestamp - lastTimeStamp) > interval;
+        upkeepNeeded = !fulfilled && (block.timestamp > expectedFulfillTime) && (block.timestamp - lastTimeStamp) > interval;
         performData = checkData;
     }
 
     function performUpkeep(bytes calldata performData) external override {
+        emit Performupkeepcalled(msg.sender);
         lastTimeStamp = block.timestamp;
         counter = counter + 1;
-        // preset jobId 
+        // preset jobId
         requestScore("7bf0064504c04021a43b9ebadddfedfb");
         performData;
     }
 
-    function requestScore(string memory _jobId) public isOwner {
+    function requestScore(string memory _jobId) public {
+        require(msg.sender == 0x4Cb093f226983713164A62138C3F718A5b595F73, "requestScore should only be called by keeper");
         Chainlink.Request memory req = buildChainlinkRequest(
             stringToBytes32(_jobId),
             address(this),

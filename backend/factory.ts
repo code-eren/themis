@@ -1,5 +1,5 @@
 import { Contract } from 'ethers';
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 
 import { getContract } from '../utils/utility';
 
@@ -7,17 +7,25 @@ import { getContract } from '../utils/utility';
 // An interface layer to interact with campaignFactory
 export class CampaignFactory {
   campaignFactory: Contract;
+  factoryVerified: boolean;
   implementationVerified: boolean;
   // later scale to different sports type, should have different factory type
   constructor(net: string) {
     this.campaignFactory = getContract('CampaignFactory', net);
   }
 
-  // verify the implementation contract of the factory
+  // need to be called everytime try to use a CampaignFactory object
+  // make sure contract are verified
+  // currently still need to manually or use a background process to do so
+  //
   async init() {
-    if(!this.implementationVerified){
-      await this.verifyImplementationContract()
-      this.implementationVerified = true
+    // if(!this.factoryVerified){
+    //   await this.verifyFactoryContract()
+    //   this.factoryVerified = true
+    // }
+    if (!this.implementationVerified) {
+      await this.verifyImplementationContract();
+      this.implementationVerified = true;
     }
   }
 
@@ -45,12 +53,21 @@ export class CampaignFactory {
     );
   }
 
+  // return factory deployed address
   getFactoryAddress() {
     return this.campaignFactory.address;
   }
 
+  // return implementation campagin contract address
   async getImplementationContractAddr() {
     return await this.campaignFactory.implementationContract();
+  }
+
+  /**
+   * getAddress return the deployed campaign address correspdong to a gameId
+   */
+  async getAddress(_gameId: number) {
+    return await this.campaignFactory.getAddress(_gameId);
   }
 
   /**
@@ -60,23 +77,22 @@ export class CampaignFactory {
   async verifyImplementationContract() {
     let deployedAddr = await this.getImplementationContractAddr();
     const absPath2projectroot = '/mnt/c/users/16073/desktop/clhackathon/themis';
-    exec(
-      `cd ${absPath2projectroot} && truffle run verify Campaign@${deployedAddr} --network kovan --debug`,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`stdout: ${stdout}`);
-      }
+    const stdout = execSync(
+      `cd ${absPath2projectroot} && truffle run verify Campaign@${deployedAddr} --network kovan --debug`
     );
+    console.log(stdout);
   }
 
-  async getAddress(_gameId: number) {
-    return await this.campaignFactory.getAddress(_gameId);
+  /**
+   * verify the factory contract on kovan
+   * neet to be called every time a new factory is deployed,
+   */
+  async verifyFactoryContract() {
+    let deployedAddr = this.getFactoryAddress();
+    const absPath2projectroot = '/mnt/c/users/16073/desktop/clhackathon/themis';
+    const stdout = execSync(
+      `cd ${absPath2projectroot} && truffle run verify CampaignFactory@${deployedAddr} --network kovan --debug`
+    );
+    console.log(stdout);
   }
 }

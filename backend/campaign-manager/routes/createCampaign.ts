@@ -1,6 +1,10 @@
 import { CampaignFactory } from '../../factory';
 import { status } from 'server/reply';
-import { delay, checkTransactionConfirmed } from '../../../utils/utility';
+import {
+  delay,
+  checkTransactionConfirmed,
+  sendToken
+} from '../../../utils/utility';
 import { moneyLine2contractOdds } from '../../../utils/math';
 import { register } from '../../keeper-registry/register';
 
@@ -23,6 +27,7 @@ export interface CreateCampaignRequest {
 }
 
 export const createCampaign = async (ctx: CreateCampaignRequest) => {
+  await factory.init();
   // should be admin endpoint
   let tx = await factory.createCampaign(
     ctx.data.oracleAddr,
@@ -53,6 +58,19 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
   }
   if (confirmed) {
     let deployedAddr = await factory.getAddress(ctx.data.gameId);
+    // send 5 link to the deployed contract
+    await sendToken(
+      '0xa36085F69e2889c224210F603D836748e7dC0088',
+      '5.0',
+      18,
+      deployedAddr,
+      'kovan'
+    );
+
+    // wait 10s for the transaction to be included
+    // TODO add error handling, retry, ...
+    await delay(10000);
+
     // TODO test it! register upkeep for this deployed contract
     let res = await register(
       'wuzhengxun@outlook.com',
