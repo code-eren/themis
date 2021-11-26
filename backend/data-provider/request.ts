@@ -2,6 +2,7 @@ var axios = require('axios').default;
 import { Schedule } from '../db/entity/schedule';
 import { Campaign } from '../db/entity/campaign';
 import { Database } from '../db/db';
+import { kovanSetup } from '../../utils/setup';
 
 if (!process.env.SPORTSDATAIO_API_KEY) {
   console.error('please set the api key!');
@@ -12,6 +13,10 @@ let api_key = process.env.SPORTSDATAIO_API_KEY;
 // in-memory cache for db, all gameId we have already created a campaign for
 // TODO: should periodically flush to db
 let gameIdDeployed = new Set();
+// TODO: should periodically flush to db, persist everytime one round of deployment finishes
+// should also fetch from database
+let startNonce = 500; 
+
 const db = new Database();
 
 /**
@@ -105,8 +110,14 @@ export async function querySchedule(date: string) {
         }
       })(conn);
 
+      // reason: 'processing response error',
+      // code: 'SERVER_ERROR',
+      // body: '{"jsonrpc": "2.0", "id": 44, "error": {"code": -32602, "message": "Unknown block number"}}',
+      // let nextNonce = await kovanSetup.signer.getTransactionCount(kovanSetup.signer.address);
+
       // start deploying valid schedule for this round of query
       for (const schedule of response.data) {
+        // startNonce++;
         if (validForDeploy(schedule)) {
           // make a post request to create a campaign
           await axios
@@ -119,7 +130,8 @@ export async function querySchedule(date: string) {
               team0MoneyLine: schedule['HomeTeamMoneyLine'],
               team1MoneyLine: schedule['AwayTeamMoneyLine'],
               drawMoneyLine: schedule['DrawMoneyLine'],
-              expectedFulfillTime: 0 // TODO need to get from data provider rather than hardcoded
+              expectedFulfillTime: 0, // TODO need to get from data provider rather than hardcoded
+              // nonce: startNonce
             })
             .then(async (res) => {
               console.log(`statusCode: ${res.status}`);

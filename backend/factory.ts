@@ -38,7 +38,8 @@ export class CampaignFactory {
     odds0: number,
     odds1: number,
     draw: number,
-    checkTime: number
+    checkTime: number,
+    // overrides: object,
   ) {
     return await this.campaignFactory.createCampaign(
       oracle_addr,
@@ -49,7 +50,8 @@ export class CampaignFactory {
       odds0,
       odds1,
       draw,
-      checkTime
+      checkTime,
+      // overrides // override 
     );
   }
 

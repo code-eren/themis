@@ -23,6 +23,7 @@ export interface CreateCampaignRequest {
     team1MoneyLine: number;
     drawMoneyLine: number;
     expectedFulfillTime: number;
+    // nonce: number;
   };
 }
 
@@ -38,10 +39,13 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
     moneyLine2contractOdds(ctx.data.team0MoneyLine),
     moneyLine2contractOdds(ctx.data.team1MoneyLine),
     moneyLine2contractOdds(ctx.data.drawMoneyLine),
-    ctx.data.expectedFulfillTime
+    ctx.data.expectedFulfillTime,
+    // {
+    //   nonce: ctx.data.nonce
+    // }
   );
   console.log(tx);
-
+  await delay(15000);
   // wait for tx to be confirmed
   // number of time to retry
   // total wait 4 * 5 = 20s
@@ -58,6 +62,9 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
   }
   if (confirmed) {
     let deployedAddr = await factory.getAddress(ctx.data.gameId);
+
+    // wait 30s
+    await delay(30000);
     // send 5 link to the deployed contract
     await sendToken(
       '0xa36085F69e2889c224210F603D836748e7dC0088',
@@ -66,10 +73,11 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
       deployedAddr,
       'kovan'
     );
+    console.log(`5 link sent to ${deployedAddr}`)
 
-    // wait 10s for the transaction to be included
+    // wait 60s for the transaction to be included
     // TODO add error handling, retry, ...
-    await delay(10000);
+    await delay(60000);
 
     // TODO test it! register upkeep for this deployed contract
     let res = await register(
@@ -81,6 +89,10 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
     );
     // TODO: error handling here
     console.log(res);
+
+    // wait another 60s for the transaction to be included
+    // TODO add error handling, retry, ...
+    await delay(60000);
 
     return status(200).json({
       deployedAddr: deployedAddr
