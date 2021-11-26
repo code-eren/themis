@@ -31,15 +31,15 @@ Follow the tutorial to [run a chainlink-node](https://docs.chain.link/docs/runni
 Example of command to run the node locally after env setup:
 `cd ~/.chainlink-kovan && docker run -p 6688:6688 -v ~/.chainlink-kovan:/chainlink -it --env-file=.env --network host smartcontract/chainlink:1.0.0 local n`
 
-## [WIP] keeper-registry
+## keeper-registry
 Run google-chrome locally `google-chrome --remote-debugging-port=9222 --user-data-dir="~/ChromeProfile"`, install metamask and setup your wallet that you want to use to be the admin for registering the keepers
 
-`python3 register.py`
+It's an inner service used by campagin-manager
 
-TODOs:
-- [ ] connect with typescript using either python-shell or server-client
-- [ ] figure out why transferAndCall on link doesn't work...
-- [ ] figure out why sometimes google-chrome crashs when start
+<del>TODOs</del>:
+- [x] connect with typescript using either python-shell or server-client
+- [x] figure out why transferAndCall on link doesn't work...
+- [x] figure out why sometimes google-chrome crashs when start
 
 
 ## db
