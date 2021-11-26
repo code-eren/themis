@@ -125,8 +125,6 @@ export async function querySchedule(date: string) {
               oracleAddr: '0xC25d00698c4c48557B363F35AFe09d8f7907296c',
               interval: 15,
               gameId: schedule['GameId'],
-              teamId0: schedule['HomeTeamId'],
-              teamId1: schedule['AwayTeamId'],
               team0MoneyLine: schedule['HomeTeamMoneyLine'],
               team1MoneyLine: schedule['AwayTeamMoneyLine'],
               drawMoneyLine: schedule['DrawMoneyLine'],

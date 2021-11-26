@@ -17,13 +17,10 @@ export interface CreateCampaignRequest {
     oracleAddr: string;
     interval: number;
     gameId: number;
-    teamId0: number;
-    teamId1: number;
     team0MoneyLine: number;
     team1MoneyLine: number;
     drawMoneyLine: number;
     expectedFulfillTime: number;
-    // nonce: number;
   };
 }
 
@@ -34,15 +31,10 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
     ctx.data.oracleAddr,
     ctx.data.interval,
     ctx.data.gameId,
-    ctx.data.teamId0,
-    ctx.data.teamId1,
     moneyLine2contractOdds(ctx.data.team0MoneyLine),
     moneyLine2contractOdds(ctx.data.team1MoneyLine),
     moneyLine2contractOdds(ctx.data.drawMoneyLine),
     ctx.data.expectedFulfillTime
-    // {
-    //   nonce: ctx.data.nonce
-    // }
   );
   console.log(tx);
   await delay(15000);
