@@ -1,11 +1,15 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 
 pragma solidity >=0.4.22 <0.9.0;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
-import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 
-contract Campaign is ChainlinkClient {
+interface KeeperCompatibleInterface {
+    function checkUpkeep(bytes calldata checkData) external returns (bool upkeepNeeded, bytes memory performData);
+    function performUpkeep(bytes calldata performData) external;
+}
+
+contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     using Chainlink for Chainlink.Request;
 
     uint256 private constant ORACLE_PAYMENT = 1 * LINK_DIVISIBILITY;
@@ -21,12 +25,12 @@ contract Campaign is ChainlinkClient {
     uint256 public odds0; // odd that team0 wins 1.1 -> 110 , bid 1, get 1.1 back
     uint256 public odds1; // odd that team1 wins 4.1 -> 410 , bid 1, get 4.1 back
     uint256 public oddsDraw; // odd of draw wins 3   -> 300 , bid 1, get 3 back
+    uint256 public expectedFulfillTime; // expectedFulfillTime to fulfill data
 
-    event RequestScoreFulfilled(
-        bytes32 indexed requestId,
-        uint256 indexed homescore,
-        uint256 indexed awayscore
-    );
+    // Use an interval in seconds and a timestamp to slow execution of Upkeep
+    uint public interval;
+    uint public counter;    // Public counter variable
+    uint public lastTimeStamp;    
 
     struct Bid {
         uint256 odd;
@@ -39,26 +43,37 @@ contract Campaign is ChainlinkClient {
         bool bidded;
     }
 
-    mapping(address => Bidder) addr2bidder;
+    mapping(address => Bidder) public addr2bidder;
+
+    uint256 public winnedTeamId;
+    bool public fulfilled; //whether the data is fulfilled
 
     modifier isOwner() {
         require(msg.sender == owner, "caller is not owner");
         _;
     }
 
+    event RequestScoreFulfilled(
+        bytes32 indexed requestId,
+        uint256 indexed homescore,
+        uint256 indexed awayscore
+    );
 
-    uint256 public winnedTeamId;
-    bool public fulfilled; //whether the data is fulfilled
+    event Performupkeepcalled(
+        address indexed caller
+    );
 
     function initialize(
         address oracle,
+        uint256 _interval,
         uint256 _gameId,
         uint256 _teamId0,
         uint256 _teamId1,
         uint256 _initialOdds0,
         uint256 _initialOdds1,
         uint256 _drawodds,
-        address _owner
+        address _owner,
+        uint256 _expectedFulfillTime
     ) external {
         owner = _owner;
         gameId = _gameId;
@@ -67,12 +82,34 @@ contract Campaign is ChainlinkClient {
         odds0 = _initialOdds0;
         odds1 = _initialOdds1;
         oddsDraw = _drawodds;
+        expectedFulfillTime = _expectedFulfillTime;
+        interval = _interval;
+        lastTimeStamp = block.timestamp;
+        counter = 0;
         setPublicChainlinkToken();
         setChainlinkOracle(oracle);
     }
 
-    // TODO: should be called/triggered by keeper
-    function requestScore(string memory _jobId) public isOwner {
+    function checkUpkeep(bytes calldata checkData) external view override returns (bool upkeepNeeded, bytes memory performData) {
+        // upkeep needed if 
+        // 1. game result hasn't been fulfilled
+        // 2. game result is ready for fetching
+        // 3. periodically check whether data is ready 
+        upkeepNeeded = !fulfilled && (block.timestamp > expectedFulfillTime) && (block.timestamp - lastTimeStamp) > interval;
+        performData = checkData;
+    }
+
+    function performUpkeep(bytes calldata performData) external override {
+        emit Performupkeepcalled(msg.sender);
+        lastTimeStamp = block.timestamp;
+        counter = counter + 1;
+        // preset jobId
+        requestScore("7bf0064504c04021a43b9ebadddfedfb");
+        performData;
+    }
+
+    function requestScore(string memory _jobId) public {
+        require(msg.sender == 0x4Cb093f226983713164A62138C3F718A5b595F73, "requestScore should only be called by keeper");
         Chainlink.Request memory req = buildChainlinkRequest(
             stringToBytes32(_jobId),
             address(this),

@@ -12,15 +12,18 @@ import { CampaignFactory } from './factory';
   let odds0 = 410;
   let odds1 = 110;
   let odds2 = 120;
+  let interval = 15;
   // create new cloned Campaign
   let tx = await cf.createCampaign(
     oracleAddr,
+    interval,
     gameId,
     teamId0,
     teamId1,
     odds0,
     odds1,
-    odds2
+    odds2,
+    0
   );
   console.log(tx);
   console.log('Creating a new Campaign ...');

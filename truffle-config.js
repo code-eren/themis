@@ -19,10 +19,13 @@
  */
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-
+require("dotenv").config();
 const fs = require('fs');
 const mnemonic = fs.readFileSync(".secret").toString().trim();
-
+if (!process.env.ETHERSCAN_API_KEY) {
+  console.error("please set etherscan api key")
+}
+// console.log(process.env.ETHERSCAN_API_KEY)
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -101,5 +104,13 @@ module.exports = {
 
   db: {
     enabled: false
-  }
+  },
+
+  api_keys: {
+    etherscan: process.env.ETHERSCAN_API_KEY
+  },
+
+  plugins: [
+    'truffle-plugin-verify'
+  ]
 };

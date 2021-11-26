@@ -26,23 +26,27 @@ contract CampaignFactory {
 
     function createCampaign(
         address _oracle,
+        uint256 _interval,
         uint256 _gameId,
         uint256 _teamId0,
         uint256 _teamId1,
         uint256 _initialOdds0,
         uint256 _initialOdds1,
-        uint256 _drawodds
+        uint256 _drawodds,
+        uint256 _expectedFulfillTime
     ) external returns (address) {
         address clone = Clones.clone(implementationContract);
         Campaign(payable(clone)).initialize(
             _oracle,
+            _interval,
             _gameId,
             _teamId0,
             _teamId1,
             _initialOdds0,
             _initialOdds1,
             _drawodds,
-            msg.sender
+            msg.sender,
+            _expectedFulfillTime
         );
         gameId2Addr[_gameId] = clone;
         emit Clonecreated(clone, _gameId);

@@ -3,6 +3,7 @@ node_modules
 betmodel/
 .secret
 .pk
-
+.env
+~/
 .openzeppelin/.session
 .vscode
