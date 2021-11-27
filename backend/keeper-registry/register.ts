@@ -1,4 +1,4 @@
-import {Database} from "../db/db"
+import { Database } from '../db/db';
 const PythonShell = require('python-shell').PythonShell;
 
 const db = new Database();
@@ -19,36 +19,32 @@ export async function register(
   };
 
   // synchronously run the python script
-  const { success, err = '', results } = await new Promise(
-    (resolve, reject) =>
-    {
-        PythonShell.run('register.py', options,
-            function (err, results)
-            {
-                if (err)
-                {
-                    reject({ success: false, err });
-                }
+  const {
+    success,
+    err = '',
+    results
+  } = await new Promise((resolve, reject) => {
+    PythonShell.run('register.py', options, function (err, results) {
+      if (err) {
+        reject({ success: false, err });
+      }
 
-                console.log('PythonShell results: %j', results);
+      console.log('PythonShell results: %j', results);
 
-                resolve({ success: true, results });
-            }
-        );
-    }
-  );
+      resolve({ success: true, results });
+    });
+  });
 
-  console.log("python call ends");
+  console.log('python call ends');
 
-  if (! success)
-  {
-      console.log("Test Error: " + err);
-      return;
+  if (!success) {
+    console.log('Test Error: ' + err);
+    return;
   }
 
-  console.log("The result is: " + results);
+  console.log('The result is: ' + results);
 
-  return results[0]
+  return results[0];
 }
 
 // small test

@@ -28,17 +28,17 @@ export class Database {
       }
     } else {
       const db_password = fs
-      .readFileSync(
-        "/mnt/c/users/16073/desktop/clhackathon/themis/backend/db/db_password"
-      )
-      .toString()
-      .trim();
+        .readFileSync(
+          '/mnt/c/users/16073/desktop/clhackathon/themis/backend/db/db_password'
+        )
+        .toString()
+        .trim();
       const connectionOptions: ConnectionOptions = {
         name: 'default',
         type: 'mysql',
-        host: "127.0.0.1",
+        host: '127.0.0.1',
         port: 3306,
-        username: "root",
+        username: 'root',
         password: db_password,
         database: 'themisDB', // create a db in root of backend
         synchronize: true,
