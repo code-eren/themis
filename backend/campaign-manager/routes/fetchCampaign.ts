@@ -22,7 +22,7 @@ export const fetchCampaigns = async () => {
     .innerJoinAndSelect(
       'Schedule',
       'schedule',
-      'campaign.ScheduleId = schedule.Id'
+      'Campaign.ScheduleId = schedule.Id'
     )
     .getRawMany();
 

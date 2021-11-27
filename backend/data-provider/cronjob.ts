@@ -14,7 +14,7 @@ var job = new CronJob(
       job.stop();
     }
     var date = new Date();
-    date.setUTCDate(date.getUTCDate() - 1);
+    date.setUTCDate(date.getUTCDate() - 10);
     await querySchedule(getFormattedDate(date));
     console.log('You will see this message every second');
   },

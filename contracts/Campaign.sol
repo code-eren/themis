@@ -24,6 +24,9 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     uint256 public odds1; // odd that team1 wins 4.1 -> 410 , bid 1, get 4.1 back
     uint256 public oddsDraw; // odd of draw wins 3   -> 300 , bid 1, get 3 back
     uint256 public expectedFulfillTime; // expectedFulfillTime to fulfill data
+    // normally a bit earlier than the expected end of the match,
+    // should also be periodically fulfilled by the keeper to keep updated with real-world situation
+    uint256 public bidDeadline; 
 
     // Use an interval in seconds and a timestamp to slow execution of Upkeep
     uint public interval;
@@ -78,6 +81,10 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         expectedFulfillTime = _expectedFulfillTime;
         interval = _interval;
         lastTimeStamp = block.timestamp;
+        // random number,
+        // note claim can only be executed once data is fulfilled, 
+        // so this number really can be anything, since it will be always reset before claim
+        winnedTeamId = 42; 
         setPublicChainlinkToken();
         setChainlinkOracle(oracle);
     }
@@ -129,10 +136,15 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     // 1: awayteam
     // 2: draw
     function bid(uint256 _teamId) external payable {
+        // can only bid if data hasn't been fulfilled and earlier than the deadline
+        require(!fulfilled && block.timestamp < bidDeadline);
+        // currently this bid api can only be win/lose/draw
+        // later can support bid on score
         require(
             _teamId == 0 || _teamId == 1 || _teamId == 2,
             "can only bid win, lose, or draw"
         );
+        // must bid positive amount
         require(msg.value > 0, "can't bid 0 amount"); //set minimum bid amount?
         addr2bidder[msg.sender].bids.push(
             Bid({

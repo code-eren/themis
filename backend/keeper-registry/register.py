@@ -48,11 +48,25 @@ def register(email, upkeepName, upkeepAddr, gasLimit, startLink):
     driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[2]').send_keys(Keys.RETURN)
     driver.switch_to.window(main_window_handle) #or driver.switch_to_default_content()
 
-    # time.sleep(6)
+    # wait 15 second to see whether tx is confirmed
+    time.sleep(15)
+    # click on view upkeep
+    driver.find_element_by_xpath('/html/body/div[5]/div/div/div/button[2]').send_keys(Keys.RETURN)
+    # switch to new window
+    viewupkeep_window_handle = None
+    while not viewupkeep_window_handle:
+        for handle in driver.window_handles:
+            if handle != main_window_handle:
+                viewupkeep_window_handle = handle
+                break
+    driver.switch_to.window(viewupkeep_window_handle)
 
-    print(driver.window_handles)
+    upkeepId = driver.find_element_by_xpath('//*[@id="__next"]/main/section[3]/dl/div/div[1]/dd').text
+
+    print(upkeepId)
+    # print(driver.window_handles)
     # driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[2]').click()
 
 # register a keeper for a campaign from piped-in data
-print(sys.argv[1])
+# print(sys.argv[1])
 register(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])

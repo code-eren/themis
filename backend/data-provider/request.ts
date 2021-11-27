@@ -2,7 +2,6 @@ var axios = require('axios').default;
 import { Schedule } from '../db/entity/schedule';
 import { Campaign } from '../db/entity/campaign';
 import { Database } from '../db/db';
-import { kovanSetup } from '../../utils/setup';
 
 if (!process.env.SPORTSDATAIO_API_KEY) {
   console.error('please set the api key!');
