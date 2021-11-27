@@ -140,7 +140,7 @@ export async function querySchedule(date: string) {
                   let campaign = new Campaign();
                   campaign.DeployedAddress = res.data.deployedAddr;
                   campaign.GameId = schedule['GameId'];
-                  campaign.KeeperAddress = null;
+                  campaign.KeeperAddress = res.data.keeperURL;
                   campaign.OracleAddress =
                     '0xC25d00698c4c48557B363F35AFe09d8f7907296c';
                   campaign.ScheduleId = gameid2scheduleid[schedule['GameId']];

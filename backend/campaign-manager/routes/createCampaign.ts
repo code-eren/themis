@@ -80,14 +80,17 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
       25
     );
     // TODO: error handling here
-    console.log(res);
+    let keeperurl = "https://keepers.chain.link/kovan/"+res
+    console.log("upkeep url is", keeperurl);
 
     // wait another 60s for the transaction to be included
     // TODO add error handling, retry, ...
+    // probably no need for 60s
     await delay(60000);
 
     return status(200).json({
-      deployedAddr: deployedAddr
+      deployedAddr: deployedAddr,
+      keeperURL: keeperurl
     });
   }
   // something potentially went wrong...
