@@ -1,4 +1,4 @@
-import { Contract } from 'ethers';
+import { Contract, ethers } from 'ethers';
 import { execSync } from 'child_process';
 
 import { getContract } from '../utils/utility';
@@ -36,8 +36,9 @@ export class CampaignFactory {
     odds0: number,
     odds1: number,
     draw: number,
-    checkTime: number
-    // overrides: object,
+    checkTime: number,
+    riskMode: number,
+    overrides: object,
   ) {
     return await this.campaignFactory.createCampaign(
       oracle_addr,
@@ -46,7 +47,9 @@ export class CampaignFactory {
       odds0,
       odds1,
       draw,
-      checkTime
+      checkTime,
+      riskMode,
+      overrides
       // overrides // override
     );
   }

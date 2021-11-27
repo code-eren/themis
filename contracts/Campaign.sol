@@ -32,6 +32,18 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     uint public interval;
     uint public lastTimeStamp;    
 
+    // risk control
+    // cumulative value
+    int homepayoff; // 100x the total value we need to pay if home team win, negative if the contract can have additional value after all valid user cleared
+    int awaypayoff; // 100x the total value we need to pay if away team win, ^
+    int drawpayoff; // 100x the total value we need to pay if it's draw, ^
+    int maxTolenrance; // max payoff we can tolerate (currently at any give time of the contract life, can add risk-taking later) 
+    // risk mode of this contract, can be 0, 1, 2 -> low, medium, high 
+    // risk mode controls two things: 
+    // 1. maxTolenrance
+    // 2. how dynamic odds are adjusted
+    uint public riskMode; 
+
     struct Bid {
         uint256 odd;
         uint256 amount;
@@ -63,6 +75,18 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         address indexed caller
     );
 
+    event BidSuccess(
+        address indexed bidder,
+        uint256 indexed amount, 
+        uint256 indexed side
+    );
+
+    event RiskModeSet(
+        uint256 indexed margin,
+        uint indexed riskMode,
+        address indexed setter
+    );
+
     function initialize(
         address oracle,
         uint256 _interval,
@@ -71,8 +95,9 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         uint256 _initialOdds1,
         uint256 _drawodds,
         address _owner,
-        uint256 _expectedFulfillTime
-    ) external {
+        uint256 _expectedFulfillTime,
+        uint _riskMode
+    ) payable external {
         owner = _owner;
         gameId = _gameId;
         odds0 = _initialOdds0;
@@ -85,6 +110,8 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         // note claim can only be executed once data is fulfilled, 
         // so this number really can be anything, since it will be always reset before claim
         winnedTeamId = 42; 
+        require(_riskMode == 0 || _riskMode == 1 || _riskMode == 2, "only support 3 level of riskMode");
+        emit RiskModeSet(msg.value, _riskMode, msg.sender);
         setPublicChainlinkToken();
         setChainlinkOracle(oracle);
     }
@@ -156,6 +183,20 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
             })
         );
         addr2bidder[msg.sender].bidded = true;
+        if (_teamId == 0){
+            awaypayoff -= int(msg.value); // assume accuracy loss is not an issue here, should not allow bid too much money anyway
+            drawpayoff -= int(msg.value);
+            homepayoff += int(msg.value) * int(odds0);
+        }else if (_teamId == 1){
+            homepayoff -= int(msg.value); 
+            drawpayoff -= int(msg.value);
+            awaypayoff += int(msg.value) * int(odds1);
+        }else{
+            homepayoff -= int(msg.value);
+            drawpayoff -= int(msg.value);
+            drawpayoff += int(msg.value) * int(oddsDraw);
+        }
+        emit BidSuccess(msg.sender, msg.value, _teamId);
     }
 
     // claim

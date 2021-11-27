@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { getContract, sendToken, delay } from '../utils/utility';
 import { CampaignFactory } from './factory';
 
@@ -19,7 +20,11 @@ import { CampaignFactory } from './factory';
     odds0,
     odds1,
     odds2,
-    0
+    0,
+    0,
+    {
+      value: ethers.utils.parseEther("0.1")
+    }
   );
   console.log(tx);
   console.log('Creating a new Campaign ...');
