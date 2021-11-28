@@ -2,6 +2,10 @@
 
 ## Quick Command: 
 
+Run tests: 
+```bash
+npm test
+```
 Make code look nicer:
 ```bash
 npm run prettier-format

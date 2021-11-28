@@ -81,7 +81,7 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
       'upkeep',
       deployedAddr,
       200000,
-      30
+      50
     );
     // TODO: error handling here
     let keeperurl = 'https://keepers.chain.link/kovan/' + res;

@@ -34,17 +34,16 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
 
     // risk control
     // cumulative value
-    int homepayoff; // 100x the total value we need to pay if home team win, negative if the contract can have additional value after all valid user cleared
-    int awaypayoff; // 100x the total value we need to pay if away team win, ^
-    int drawpayoff; // 100x the total value we need to pay if it's draw, ^
-    int maxTolerance; // max payoff we can tolerate (currently at any give time of the contract life, can add risk-taking later) 
+    int public homepayoff; // 100x the total value we need to pay if home team win, negative if the contract can have additional value after all valid user cleared
+    int public awaypayoff; // 100x the total value we need to pay if away team win, ^
+    int public drawpayoff; // 100x the total value we need to pay if it's draw, ^
     // risk mode of this contract, can be 0, 1, 2 -> low, medium, high 
     // risk mode controls two things: 
     // 1. maxTolenrance
     // 2. how dynamic odds are adjusted
     uint public riskMode;
-
-    int[3] riskMode2maxTolerance = [int(0.01 ether), 0.05 ether, 0.1 ether];
+    // max payoff we can tolerate (currently at any give time of the contract life, can add risk-taking later) 
+    int[] public riskMode2maxTolerance;
 
     uint public amountBidOnHomeTeam;
     uint public amountBidOnAwayTeam;
@@ -112,6 +111,9 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         uint _riskMode
     ) payable external {
         require(_riskMode == 0 || _riskMode == 1 || _riskMode == 2, "only support 3 level of riskMode");
+        riskMode2maxTolerance.push(int(0.01 * 1e18)); // riskMode 0
+        riskMode2maxTolerance.push(int(0.05 * 1e18)); // riskMode 1
+        riskMode2maxTolerance.push(int(0.1 * 1e18)); // riskMode 2
         require(int(msg.value) >= riskMode2maxTolerance[_riskMode], "not enough margin to create a campaign with correspoding riskmode");
         owner = _owner;
         gameId = _gameId;
@@ -125,6 +127,7 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         // note claim can only be executed once data is fulfilled, 
         // so this number really can be anything, since it will be always reset before claim
         winnedTeamId = 42; 
+        bidDeadline = block.timestamp + 86400;
         int potential_v1 = (_initialOdds1 * _drawodds - _initialOdds1 - _drawodds) / _drawodds;
         int potential_v2 = _drawodds / ((_initialOdds0 * _drawodds) / 100 - _initialOdds0 - _drawodds);
         if (potential_v1 < potential_v2) {
@@ -200,13 +203,18 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         fulfilled = true;
     }
 
+    event NewHomepayoff(
+        int indexed newHomepayoff,
+        int indexed maxTolerance
+    );
     // bid team with teamId to win
     // 0: hometeam
     // 1: awayteam
     // 2: draw
     function bid(uint256 _teamId) external payable {
         // can only bid if data hasn't been fulfilled and earlier than the deadline
-        require(!fulfilled && block.timestamp < bidDeadline);
+        require(!fulfilled && block.timestamp < bidDeadline,
+         "the contract already been fulfilled or the bid deadline has been passed");
         // currently this bid api can only be win/lose/draw
         // later can support bid on score
         require(
@@ -216,14 +224,18 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         // must bid positive amount
         require(msg.value > 0, "can't bid 0 amount"); //set minimum bid amount?
         // TODO set a maximum bid amount
-
+        
         // check whether potential payoff would exceed maxTolerance
         if (_teamId == 0){
-            require((homepayoff + int(msg.value) * int(odds0))/100 <= riskMode2maxTolerance[riskMode]);
+            require(((homepayoff + int(msg.value) * int(odds0))/100) <= riskMode2maxTolerance[riskMode],
+            concat(uint2str(uint((homepayoff + int(msg.value) * int(odds0))/100)),
+            uint2str(uint(riskMode2maxTolerance[riskMode]))));
         }else if (_teamId == 1){
-            require((awaypayoff + int(msg.value) * int(odds1))/100 <= riskMode2maxTolerance[riskMode]);
+            require(((awaypayoff + int(msg.value) * int(odds1))/100) <= riskMode2maxTolerance[riskMode],
+            "potential payoff would exceed maxTolerance");
         }else{
-            require((drawpayoff + int(msg.value) * int(oddsDraw))/100 <= riskMode2maxTolerance[riskMode]);
+            require(((drawpayoff + int(msg.value) * int(oddsDraw))/100) <= riskMode2maxTolerance[riskMode],
+            "potential payoff would exceed maxTolerance");
         }
         
         // push the bid to addr2bidder
@@ -247,10 +259,10 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
             awaypayoff -= int(msg.value); // assume accuracy loss is not an issue here, should not allow bid too much money anyway
             drawpayoff -= int(msg.value);
             homepayoff += int(msg.value) * int(odds0);
-            int idealxy = (xyratio_lower + xyratio_upper) / 2;
-            int deltaoddsxy = odds0 * ((idealxy * int(amountBidOnAwayTeam) - int(amountBidOnHomeTeam)) / int(amountBidOnHomeTeam));
-            int idealxz = (xzratio_lower + xzratio_upper) / 2;
-            int deltaoddsxz = odds0 * ((idealxz * int(amountBidOnDraw) - int(amountBidOnHomeTeam)) / int(amountBidOnHomeTeam));
+            int idealxy = xyratio_upper;
+            int deltaoddsxy = odds0 * (((idealxy * int(amountBidOnAwayTeam)) / 100 - int(amountBidOnHomeTeam)) / int(amountBidOnHomeTeam));
+            int idealxz = xzratio_upper;
+            int deltaoddsxz = odds0 * (((idealxz * int(amountBidOnDraw)) / 100 - int(amountBidOnHomeTeam)) / int(amountBidOnHomeTeam));
             int changeInOdd0 = 0;
             if (deltaoddsxy < 0 && deltaoddsxz < 0) {
                 changeInOdd0 = deltaoddsxy < deltaoddsxz ? deltaoddsxy : deltaoddsxz;
@@ -264,10 +276,10 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
             homepayoff -= int(msg.value); 
             drawpayoff -= int(msg.value);
             awaypayoff += int(msg.value) * int(odds1);
-            int idealyx =  (1 / xyratio_lower + 1 / xyratio_upper) / 2;
-            int deltaoddsyx = odds1 * ((idealyx * int(amountBidOnHomeTeam) - int(amountBidOnAwayTeam)) / int(amountBidOnAwayTeam));
-            int idealyz = (yzratio_lower + yzratio_upper) / 2;
-            int deltaoddsyz = odds1 * ((idealyz * int(amountBidOnDraw) - int(amountBidOnAwayTeam)) / int(amountBidOnAwayTeam));
+            int idealyx =  1 / xyratio_upper;
+            int deltaoddsyx = odds1 * (((idealyx * int(amountBidOnHomeTeam)) / 100 - int(amountBidOnAwayTeam)) / int(amountBidOnAwayTeam));
+            int idealyz = yzratio_upper;
+            int deltaoddsyz = odds1 * (((idealyz * int(amountBidOnDraw)) / 100 - int(amountBidOnAwayTeam)) / int(amountBidOnAwayTeam));
             int changeInOdd1 = 0;
             if (deltaoddsyx < 0 && deltaoddsyz < 0) {
                 changeInOdd1 = deltaoddsyx < deltaoddsyz ? deltaoddsyx : deltaoddsyz;
@@ -281,10 +293,10 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
             homepayoff -= int(msg.value);
             drawpayoff -= int(msg.value);
             drawpayoff += int(msg.value) * int(oddsDraw);
-            int idealzx = (1 / xzratio_lower + 1 / xzratio_upper) / 2;
-            int deltaoddszx = oddsDraw * ((idealzx * int(amountBidOnHomeTeam) - int(amountBidOnDraw)) / int(amountBidOnDraw));
-            int idealzy = (1 / yzratio_lower + 1 / yzratio_upper) / 2;
-            int deltaoddszy = oddsDraw * ((idealzy * int(amountBidOnAwayTeam) - int(amountBidOnDraw)) / int(amountBidOnDraw));
+            int idealzx = 1 / xzratio_upper;
+            int deltaoddszx = oddsDraw * (((idealzx * int(amountBidOnHomeTeam)) / 100 - int(amountBidOnDraw)) / int(amountBidOnDraw));
+            int idealzy = 1 / yzratio_upper;
+            int deltaoddszy = oddsDraw * (((idealzy * int(amountBidOnAwayTeam)) / 100 - int(amountBidOnDraw)) / int(amountBidOnDraw));
             int changeInDraw = 0;
             if (deltaoddszx < 0 && deltaoddszy < 0) {
                 changeInDraw = deltaoddszx < deltaoddszy ? deltaoddszx : deltaoddszy;
@@ -380,5 +392,26 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
 
     function getChainlinkToken() public view returns (address) {
         return chainlinkTokenAddress();
+    }
+
+    function concat(string memory _base, string memory _value) internal pure returns (string memory) {
+        bytes memory _baseBytes = bytes(_base);
+        bytes memory _valueBytes = bytes(_value);
+
+        string memory _tmpValue = new string(_baseBytes.length + _valueBytes.length);
+        bytes memory _newValue = bytes(_tmpValue);
+
+        uint i;
+        uint j;
+
+        for(i=0; i<_baseBytes.length; i++) {
+            _newValue[j++] = _baseBytes[i];
+        }
+
+        for(i=0; i<_valueBytes.length; i++) {
+            _newValue[j++] = _valueBytes[i];
+        }
+
+        return string(_newValue);
     }
 }

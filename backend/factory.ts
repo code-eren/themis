@@ -23,10 +23,10 @@ export class CampaignFactory {
     //   await this.verifyFactoryContract()
     //   this.factoryVerified = true
     // }
-    // if (!this.implementationVerified) {
-    //   await this.verifyImplementationContract();
-    //   this.implementationVerified = true;
-    // }
+    if (!this.implementationVerified) {
+      await this.verifyImplementationContract();
+      this.implementationVerified = true;
+    }
   }
 
   async createCampaign(
