@@ -13,13 +13,15 @@ import { setLoading, setMatches } from './redux/actions/MatchesActions';
 import { MyBets } from './components/MyBets/MyBets';
 import { setError } from './redux/actions/MatchesActions';
 import { CampaignContract } from './web3/campaign';
-import { useWeb3ExecuteFunction } from 'react-moralis';
+import { useMoralis, useWeb3ExecuteFunction } from 'react-moralis';
 import { store } from './storage/redux-store';
 import { Button } from '@mui/material';
 
 function App() {
   const {fetch} = useWeb3ExecuteFunction();
+  const { enableWeb3 } = useMoralis();
   useEffect(() => {
+    enableWeb3();
     setLoading();
     api.getMatches().then((matches) => {
       setMatches(matches);
@@ -36,8 +38,11 @@ function App() {
     const contracts = matches.map(
       (match) => new CampaignContract(match.contractAddress)
     );
-    contracts.forEach((contract) => fetch(contract.isFulfilledParams()));
-    contracts.forEach((contract) => fetch(contract.winnerParams())); 
+    // contracts.forEach((contract) => fetch(contract.isFulfilledParams()));
+    // contracts.forEach((contract) => fetch(contract.winnerParams()));
+    contracts.forEach((contract) => {
+      contract.allPropsParams().forEach(params => fetch(params))
+    })
   }
   return (
     <React.Fragment>      

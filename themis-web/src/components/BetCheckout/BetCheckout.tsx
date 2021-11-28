@@ -5,11 +5,12 @@ import { BetAmount } from "./BetAmount/BetAmount";
 import { MatchDetails } from "./MatchDetails/MatchDetails";
 import { BetExecution } from "./BetExecution/BetExecution";
 import { BetCheckoutState } from "../../interfaces/BetCheckoutState";
-import { useWeb3ExecuteFunction } from "react-moralis";
+import { useMoralis, useMoralisWeb3Api, useWeb3ExecuteFunction } from "react-moralis";
 import { CampaignContract } from "../../web3/campaign";
 import { Match } from "../../interfaces/Match";
 import { finalize, setError, submit } from "../../redux/actions/BetCheckoutActions";
 import { Transaction } from "../../interfaces/Bet";
+import { toast } from "react-toastify";
 
 export interface BetCheckoutProps {
     match: Match | null;
@@ -19,6 +20,7 @@ export interface BetCheckoutProps {
 export function BetCheckout(props: BetCheckoutProps) {
     // Moralis hook
     const { fetch } = useWeb3ExecuteFunction();
+    const { web3, user } = useMoralis();
     const [currentStep, setCurrentStep] = React.useState(0);
     if (props.match === null) {
         return (
@@ -48,16 +50,22 @@ export function BetCheckout(props: BetCheckoutProps) {
                 contractTeamId = 2;
             }
         }
-        fetch({
-            params: campaignContract.bid(contractTeamId.toString(), amount), 
-            onError: error => setError(error.message),
-            onSuccess: (transaction: any) => {
-                finalize({
-                    ...transaction,
-                    contractAddress: campaignContract.contractAddress // TODO: ask Moralis dev team why contract address is null
-                });
-            }
-        });
+
+        if (web3 === null || user === null) {
+            toast("Please connect wallet.");
+        } else {
+            const contract = new web3.eth.Contract(campaignContract.abi, campaignContract.contractAddress);
+            let contractTx = campaignContract.betterBid(amount, user.get('ethAddress'));
+            web3.eth.estimateGas(contractTx).then((gasEstimate: number) => {
+                console.log(gasEstimate)
+                contract.methods.bid(teamId).send({
+                    ...contractTx,
+                    gas: gasEstimate + 450000
+                }).then(console.log, (error: any) => setError(error["message"]))
+            })
+        }
+
+        fetch(campaignContract.bidParams(teamId, amount));
     }
 
     const renderStepperPage = (step: number) => {

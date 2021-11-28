@@ -1,5 +1,4 @@
 import { Container, Dialog, Paper, Typography } from '@mui/material';
-import React from 'react';
 import { MatchesTable } from '../MatchesTable/MatchesTable';
 import { MatchesState } from '../../interfaces/MatchesState';
 import BetCheckoutContainer from '../../containers/BetCheckoutContainer';
@@ -9,10 +8,13 @@ import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner';
 import { useMoralis } from 'react-moralis';
 import { toast } from 'react-toastify';
 import {HTTPError} from '../HTTPError/HTTPError';
+import { CampaignContractProperties } from '../../interfaces/CampaignContract';
+import { getMatchContracts } from '../../redux/selectors/MatchContractSelectors';
 
 export interface AllMatchesProps {
     matchesState: MatchesState;
     betCheckoutState: BetCheckoutState;
+    contractProps: CampaignContractProperties[];
     selectMatch: (matchID: string) => void;
     onCancel: () => void;
     setMatches: (matches: Match[]) => void;
@@ -29,7 +31,7 @@ export function AllMatches(props: AllMatchesProps) {
         }
     }
 
-    let result = <MatchesTable matches={props.matchesState.matches} onMatchClicked={selectMatch} />;
+    let result = <MatchesTable matchContracts={getMatchContracts(props.matchesState.matches, props.contractProps)} onMatchClicked={selectMatch} />;
     if (props.matchesState.loading) {
         result = <LoadingSpinner/>;
     } else if (props.matchesState.error !== "") {

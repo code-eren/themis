@@ -7,6 +7,7 @@ import { RootState } from "../redux/reducers";
 const mapStateToProps = (state: RootState): AllMatchesProps => ({
     matchesState: state.matches,
     betCheckoutState: state.betCheckout,
+    contractProps: state.contractsState.contractProps,
     selectMatch,
     onCancel: cancel,
     setMatches,

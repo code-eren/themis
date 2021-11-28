@@ -3,7 +3,7 @@ import { GetCampaignsResponse, Campaign } from './responses';
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://1774-38-122-226-212.ngrok.io/',
+  baseURL: 'http://3d59-38-122-226-212.ngrok.io/',
   timeout: 1000,
 });
 

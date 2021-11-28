@@ -16,7 +16,7 @@ const defaultPropertyStatus: PropertyStatus = {
     error: ""
 }
 
-const defaultContract: CampaignContractProperties = {
+export const defaultContract: CampaignContractProperties = {
     contractAddress: "",
     matchId: { status: defaultPropertyStatus },
     awayScore: { status: defaultPropertyStatus },
@@ -28,7 +28,8 @@ const defaultContract: CampaignContractProperties = {
     drawOdds: { status: defaultPropertyStatus },
     homeTeamId: { status: defaultPropertyStatus },
     awayTeamId: { status: defaultPropertyStatus },
-    winnerTeamId: { status: defaultPropertyStatus }
+    winnerTeamId: { status: defaultPropertyStatus },
+    addressToBidder: { status: defaultPropertyStatus }
 }
 
 export const reducer = (state:CampaignContractsState=initialState, action: CampaignContractsAction): CampaignContractsState => {

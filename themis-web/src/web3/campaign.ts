@@ -1,6 +1,9 @@
+import { finalize, setError } from './../redux/actions/BetCheckoutActions';
 import { update } from './../redux/actions/CampaignContractsActions';
 import { Moralis } from 'moralis';
 import Campaign from '../abis/Campaign.json';
+import Campaignv2 from '../abis/Campaignv2.json';
+import Campaignv3 from '../abis/Campaignv3.json';
 import { Contract } from './moralis-wrapper';
 
 interface MoralisFetchParams {
@@ -8,6 +11,8 @@ interface MoralisFetchParams {
         abi: Object;
         contractAddress: string;
         functionName: string;
+        params?: any,
+        msgValue?: string | number
     };
     onSuccess: (data: unknown) => void;
     onError: (error: any) => void;
@@ -17,17 +22,38 @@ const CONTRACT_TYPE_ERROR = "smart contract type error";
 
 export class CampaignContract extends Contract {
     constructor(contractAddress: string) {
-        super(Campaign.abi, contractAddress);
+        const campaign: any = Campaignv3;
+        super(campaign["abi"], contractAddress);
     }
 
-    bid(_teamId: string, amount: string) {
+    bidParams(_teamId: string, amount: string): MoralisFetchParams {
         return {
-            ...this.metadata(),
-            functionName: "bid",
             params: {
-                _teamId,
+                ...this.metadata(),
+                functionName: "bid",
+                params: {
+                    _teamId: _teamId,
+                },
+                msgValue: Moralis.Units.ETH(amount)
             },
-            msgValue: Moralis.Units.ETH(amount)
+            onSuccess: (transaction: any) => {
+                finalize({
+                    ...transaction,
+                    contractAddress: this.contractAddress
+                })
+            },
+            onError: (error: any) => setError(error["message"])
+        };
+    }
+
+    betterBid(amount: string, fromAddr: string) {
+        return {
+            from: fromAddr,
+            to: this.contractAddress,
+            value: Moralis.Units.ETH(amount),
+            gas: 50000000
+            // gasPrice: Moralis.Units.ETH("0.03"),
+            // gasLimit: Moralis.Units.ETH("0.03"),
         };
     }
 
@@ -55,9 +81,9 @@ export class CampaignContract extends Contract {
                     this._updateIsFulfilledProperty(false, CONTRACT_TYPE_ERROR);
                 }
             },
-            onError: (error: unknown) => {
+            onError: (error: any) => {
                 console.log(error);
-                this._updateIsFulfilledProperty(false, JSON.stringify(error));
+                this._updateIsFulfilledProperty(false, error["message"]);
             }
         };
     }
@@ -93,7 +119,7 @@ export class CampaignContract extends Contract {
             },
             onError: (error: any) => {
                 console.log(error);
-                this._updateWinnerTeamIdProperty(false, error.message)
+                this._updateWinnerTeamIdProperty(false, error["message"])
             } 
         }
     }
@@ -109,5 +135,45 @@ export class CampaignContract extends Contract {
                 }
             }
         }]);
+    }
+
+    addressToBidderParams(): MoralisFetchParams {
+        // set loading to true before contract calls and when complete set to false
+        this._updateAddressToBidderProperty(true, "");
+        return {
+            params: {
+                ...this.metadata(),
+                functionName: "addr2bidder"
+            },
+            onSuccess: (data: unknown) => {
+                console.log(data);
+                this._updateAddressToBidderProperty(false, "", data);
+            },
+            onError: (error: any) => {
+                console.log(error);
+                this._updateAddressToBidderProperty(false, error["message"])
+            } 
+        }
+    }
+
+    _updateAddressToBidderProperty(loading: boolean, error: string, addressToBidder?: any) {
+        update([{
+            contractAddress: this.contractAddress,
+            addressToBidder: {
+                value: addressToBidder,
+                status: {
+                    loading,
+                    error
+                }
+            }
+        }]);
+    }
+
+    allPropsParams() {
+        return [
+            this.isFulfilledParams(),
+            this.addressToBidderParams(),
+            this.addressToBidderParams()
+        ];
     }
 }

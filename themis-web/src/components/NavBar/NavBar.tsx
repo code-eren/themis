@@ -19,8 +19,7 @@ export function NavBar() {
     ]
     
     const handleLogin = () => {
-        authenticate();
-        enableWeb3();
+        authenticate().then(() => enableWeb3());
     };
 
     const handleLogout = () => {

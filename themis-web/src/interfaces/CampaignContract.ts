@@ -48,6 +48,10 @@ export interface CampaignContractProperties {
         value?: string;
         status: PropertyStatus;
     }; // winnedTeamId
+    addressToBidder: {
+        value?: any;
+        status: PropertyStatus;
+    } // addr2bidder
 }
 
 
@@ -101,6 +105,10 @@ export interface OptionalCampaignContractProperties {
         value?: string;
         status: PropertyStatus;
     }; // winnedTeamId
+    addressToBidder?: {
+        value?: any;
+        status: PropertyStatus;
+    } // addr2bidder
 }
 export interface PropertyStatus {
     loading: boolean; // insert loading if value is loading
