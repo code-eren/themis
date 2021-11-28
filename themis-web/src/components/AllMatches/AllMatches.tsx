@@ -5,9 +5,10 @@ import { MatchesState } from '../../interfaces/MatchesState';
 import BetCheckoutContainer from '../../containers/BetCheckoutContainer';
 import { BetCheckoutState } from '../../interfaces/BetCheckoutState';
 import { Match } from '../../interfaces/Match';
-import { CircularProgress } from '@mui/material';
+import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner';
 import { useMoralis } from 'react-moralis';
 import { toast } from 'react-toastify';
+import {HTTPError} from '../HTTPError/HTTPError';
 
 export interface AllMatchesProps {
     matchesState: MatchesState;
@@ -27,17 +28,22 @@ export function AllMatches(props: AllMatchesProps) {
             props.selectMatch(matchID);
         }
     }
-    const result = props.matchesState.loading ? <CircularProgress/> :
-    <MatchesTable matches={props.matchesState.matches} onMatchClicked={selectMatch} />;
+
+    let result = <MatchesTable matches={props.matchesState.matches} onMatchClicked={selectMatch} />;
+    if (props.matchesState.loading) {
+        result = <LoadingSpinner/>;
+    } else if (props.matchesState.error !== "") {
+        result = <HTTPError message={props.matchesState.error} />;
+    }
     return (
-        <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
+        <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
             <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
-                <Typography component="h1" variant="h4" align="center">
+                <Typography component="h1" variant="h4" align="center" marginBottom="10px">
                     Matches
                 </Typography>
                 { result }
             </Paper>
-            <Dialog onClose={props.onCancel} open={props.betCheckoutState.matchID !== ""} onBackdropClick={props.onCancel}>
+            <Dialog onClose={props.onCancel} open={props.betCheckoutState.bet.matchID !== ""} onBackdropClick={props.onCancel}>
                 {
                     <BetCheckoutContainer />
                 }

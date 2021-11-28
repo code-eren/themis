@@ -42,7 +42,7 @@ export function BetAmount (props: BetAmountProps) {
     return (
         <Box sx={{padding: 2}}>
             {
-                props.betCheckoutState.matchID === "" ?
+                props.betCheckoutState.bet.matchID === "" ?
                 <Typography textAlign="center">Please go back and select a side.</Typography> :
                 <Grid container>
                     <Grid xs={12} sx={{margin: 2}}>
@@ -52,7 +52,7 @@ export function BetAmount (props: BetAmountProps) {
                     </Grid>
                     <Grid xs={12} textAlign="center" sx={{margin: 3}}>
                         <TextField
-                            value={props.betCheckoutState.bidAmount}
+                            value={props.betCheckoutState.bet.bidAmount}
                             onChange={(event) => enterBid(event.target.value)}
                             label="Amount"
                             InputProps={{
@@ -62,10 +62,10 @@ export function BetAmount (props: BetAmountProps) {
                     </Grid>
                     <Grid xs={12}>
                         {
-                            props.betCheckoutState.bidAmount !== "" 
+                            props.betCheckoutState.bet.bidAmount !== "" 
                             && renderAmountWinningsMessage(
                                 getTeamOdds(props.betCheckoutState, props.match),
-                                props.betCheckoutState.bidAmount
+                                props.betCheckoutState.bet.bidAmount
                             )
                         }
                     </Grid>

@@ -10,6 +10,6 @@ export const getTeamOdds = (bcs: BetCheckoutState, match: Match) => {
         match.away,
         match.home
     ];
-    let odds = allOdds.find(odds => odds.team.ID === bcs.teamID);
+    let odds = allOdds.find(odds => odds.team.ID === bcs.bet.teamID);
     return odds === undefined ? null : odds;
 };

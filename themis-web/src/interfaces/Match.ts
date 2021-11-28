@@ -7,4 +7,5 @@ export interface Match {
   tie: TeamOdds;
   startTimestamp: number;
   contractAddress: string;
+  isKeeperRegistered: boolean;
 }

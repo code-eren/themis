@@ -31,7 +31,7 @@ export function MatchDetails(props: MatchDetailsProps) {
                                 container
                                 direction="column"
                                 xs={4}
-                                sx={{cursor: "pointer", backgroundColor: props.betCheckoutState.teamID === teamOdds.team.ID ? '#ededed' : '#ffffff', ":hover": {
+                                sx={{cursor: "pointer", backgroundColor: props.betCheckoutState.bet.teamID === teamOdds.team.ID ? '#ededed' : '#ffffff', ":hover": {
                                     backgroundColor: '#ededed'
                                 }}}
                                 onClick={() => selectSide(teamOdds.team.ID)}

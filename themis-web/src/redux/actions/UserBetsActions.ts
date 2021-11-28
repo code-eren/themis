@@ -1,37 +1,37 @@
-import { BetStatus } from './../../interfaces/Bet';
+import { BetMade } from './../../interfaces/Bet';
 import { UserBetsActionTypes } from "../constants/UserBetsActionTypes";
-import { BetCheckoutState } from "../../interfaces/BetCheckoutState";
 import { dispatch } from "../../storage/redux-store";
 
-export interface DraftBetAction {
-    type: typeof UserBetsActionTypes.DRAFT_BET;
-    bet: BetCheckoutState;
+export interface AddBetAction {
+    type: typeof UserBetsActionTypes.ADD_BET;
+    bet: BetMade;
+
 }
 
-export interface SetBetStatusAction {
-    type: typeof UserBetsActionTypes.SET_BET_STATUS,
-    betID: string;
-    betStatus: BetStatus;
-}
+export const addBet = (bet: BetMade): AddBetAction => dispatch({
+    type: UserBetsActionTypes.ADD_BET,
+    bet
+});
 
 export interface RefreshAction {
     type: typeof UserBetsActionTypes.REFRESH;
 }
 
-export type UserBetsAction =
-    DraftBetAction | SetBetStatusAction | RefreshAction;
-
-export const draftBet = (bet: BetCheckoutState): DraftBetAction => dispatch({
-    type: UserBetsActionTypes.DRAFT_BET,
-    bet
-});
-
-export const setBetStatus = (betID: string, betStatus: BetStatus) => dispatch({
-    type: UserBetsActionTypes.SET_BET_STATUS,
-    betID,
-    betStatus
-});
-
 export const refresh = (): RefreshAction => ({
     type: UserBetsActionTypes.REFRESH
 });
+
+export interface SetClaimableAction {
+    type: typeof UserBetsActionTypes.SET_CLAIMABLE;
+    txHash: string; // used to identify bet made
+    claimable: boolean;
+}
+
+export const setClaimable = (txHash: string, claimable: boolean) => dispatch({
+    type: UserBetsActionTypes.SET_CLAIMABLE,
+    txHash,
+    claimable
+});
+
+export type UserBetsAction =
+    AddBetAction | RefreshAction | SetClaimableAction;

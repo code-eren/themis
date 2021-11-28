@@ -1,5 +1,5 @@
-import { dispatch } from './../../storage/redux-store';
-import { Match } from './../../interfaces/Match';
+import { dispatch } from '../../storage/redux-store';
+import { Match } from '../../interfaces/Match';
 import { MatchActionType } from "../constants/MatchesActionTypes";
 
 export interface SetMatchesAction {
@@ -12,8 +12,13 @@ export interface SetLoadingAction {
     loading: boolean;
 }
 
+export interface SetErrorAction {
+    type: typeof MatchActionType.SET_ERROR;
+    error: string;
+}
+
 export type MatchesAction =
-    SetMatchesAction | SetLoadingAction;
+    SetMatchesAction | SetLoadingAction | SetErrorAction;
 
 // fetch all matches
 export const setMatches = (matches: Match[]) => dispatch({
@@ -23,5 +28,10 @@ export const setMatches = (matches: Match[]) => dispatch({
 
 export const setLoading = (loading: boolean = true) => dispatch({
     type: MatchActionType.SET_LOADING,
-    loading,
-})
+    loading
+});
+
+export const setError = (error: string) => dispatch({
+    type: MatchActionType.SET_ERROR,
+    error
+});

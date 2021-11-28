@@ -1,9 +1,10 @@
-import { DraftBetAction } from './../actions/UserBetsActions';
-import { BetCheckoutActionTypes } from './../constants/BetCheckoutActionTypes';
-import { Action, combineReducers } from 'redux';
+import { CampaignContractsState } from './../../interfaces/CampaignContractsState';
+import { AddBetAction } from './../actions/UserBetsActions';
+import { BetCheckoutActionTypes } from '../constants/BetCheckoutActionTypes';
 import * as betCheckout from './BetCheckoutReducer';
 import * as userBets from './UserBetsReducer';
 import * as matches from './MatchesReducer';
+import * as contracts from './CampaignContractsReducer';
 import { BetCheckoutState } from '../../interfaces/BetCheckoutState';
 import { UserBetsState } from '../../interfaces/UserBetsState';
 import { MatchesState } from '../../interfaces/MatchesState';
@@ -13,33 +14,40 @@ export interface RootState {
     betCheckout: BetCheckoutState;
     userBets: UserBetsState;
     matches: MatchesState;
+    contractsState: CampaignContractsState;
 }
 
 export default (
     state: RootState={
         betCheckout: betCheckout.initialState,
         userBets: userBets.initialState,
-        matches: matches.initialState
+        matches: matches.initialState,
+        contractsState: contracts.initialState
     },
     action: any
-) => {
+): RootState => {
     switch (action.type) {
-        case BetCheckoutActionTypes.SUBMIT: {
-            const userBetsAction: DraftBetAction = {
-                type: UserBetsActionTypes.DRAFT_BET,
-                bet: { ...state.betCheckout }
+        case BetCheckoutActionTypes.FINALIZE: {
+            const addBetAction: AddBetAction = {
+                type: UserBetsActionTypes.ADD_BET,
+                bet: {
+                    bet: state.betCheckout.bet,
+                    transaction: action.transaction
+                }
             };
             return {
                 betCheckout: betCheckout.reducer(state.betCheckout, action),
-                userBets: userBets.reducer(state.userBets, userBetsAction),
-                matches: state.matches
+                userBets: userBets.reducer(state.userBets, addBetAction),
+                matches: matches.reducer(state.matches, action),
+                contractsState: contracts.reducer(state.contractsState, action)
             }
         }
         default: {
             return {
                 betCheckout: betCheckout.reducer(state.betCheckout, action),
                 userBets: userBets.reducer(state.userBets, action),
-                matches: matches.reducer(state.matches, action)
+                matches: matches.reducer(state.matches, action),
+                contractsState: contracts.reducer(state.contractsState, action)
             }
         }
     }

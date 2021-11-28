@@ -1,3 +1,4 @@
+import { Transaction } from './../../interfaces/Bet';
 import {BetCheckoutActionTypes} from '../constants/BetCheckoutActionTypes';
 import { dispatch } from '../../storage/redux-store';
 
@@ -31,7 +32,7 @@ export interface SetLoadingAction {
 
 export interface FinalizeAction {
     type: typeof BetCheckoutActionTypes.FINALIZE;
-    transactionHash: string;
+    transaction: Transaction;
 }
 
 export interface SetErrorAction {
@@ -72,9 +73,9 @@ export const setError = (error: string): SetErrorAction => dispatch({
     error
 });
 
-export const finalize = (transactionHash: string): FinalizeAction => dispatch({
+export const finalize = (transaction: Transaction): FinalizeAction => dispatch({
     type: BetCheckoutActionTypes.FINALIZE,
-    transactionHash
+    transaction
 });
 
 export type BetCheckoutAction = 

@@ -1,15 +1,17 @@
+import { Bet } from '../../interfaces/Bet';
 import { BetCheckoutActionTypes } from '../constants/BetCheckoutActionTypes';
 import { BetCheckoutState } from '../../interfaces/BetCheckoutState';
 import { BetCheckoutAction } from '../actions/BetCheckoutActions';
 
 export const initialState : BetCheckoutState = {
-    matchID: "",
-    teamID: "",
-    bidAmount: "",
+    bet: {
+        matchID: "",
+        teamID: "",
+        bidAmount: "",
+    },
     error: "",
     loading: false,
-    finished: false,
-    transactionHash: ""
+    finished: false
 };
 
 export const reducer = (state=initialState, action: BetCheckoutAction): BetCheckoutState => {
@@ -21,9 +23,13 @@ export const reducer = (state=initialState, action: BetCheckoutAction): BetCheck
                     error: "Please select a valid match.",
                 };
             }
+            const newBet: Bet = {
+                ...state.bet,
+                matchID: action.selectedMatchID
+            }
             return {
                 ...initialState,
-                matchID: action.selectedMatchID,
+                bet: newBet,
                 error: "",
             };
         }
@@ -34,23 +40,31 @@ export const reducer = (state=initialState, action: BetCheckoutAction): BetCheck
                     error: "Please select a valid side."
                 };
             }
+            const newBet: Bet = {
+                ...state.bet,
+                teamID: action.selectedTeamID
+            }
             return {
                 ...state,
-                teamID: action.selectedTeamID,
+                bet: newBet,
                 error: "",
             };
         }
         case BetCheckoutActionTypes.ENTER_BID: {
+            const newBet: Bet = {
+                ...state.bet,
+                bidAmount: action.enteredBidAmount
+            }
             if (!isValidBidAmount(action.enteredBidAmount)) {
                 return {
                     ...state,
-                    bidAmount: action.enteredBidAmount,
+                    bet: newBet,
                     error: "Please enter a valid bid amount."
                 }
             }
             return {
                 ...state,
-                bidAmount: action.enteredBidAmount,
+                bet: newBet,
                 error: "",
             };
         }
@@ -75,7 +89,6 @@ export const reducer = (state=initialState, action: BetCheckoutAction): BetCheck
                 ...state,
                 loading: false,
                 finished: true,
-                transactionHash: action.transactionHash
             };
         }
         default: {
@@ -91,7 +104,7 @@ const isValidBidAmount = (bidAmount: string): boolean => {
     return true;
 };
 
-export const isValidBetCheckoutState = (bet: BetCheckoutState): boolean => {
-    return bet.teamID !== "" && bet.matchID !== "" &&
-        isValidBidAmount(bet.bidAmount) && bet.error === "";
+export const isValidBetCheckoutState = (betCheckoutState: BetCheckoutState): boolean => {
+    return betCheckoutState.bet.teamID !== "" && betCheckoutState.bet.matchID !== "" &&
+        isValidBidAmount(betCheckoutState.bet.bidAmount) && betCheckoutState.error === "";
 };

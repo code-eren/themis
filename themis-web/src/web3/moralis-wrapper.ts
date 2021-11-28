@@ -1,4 +1,7 @@
 import { useWeb3ExecuteFunction } from "react-moralis";
+import axios from 'axios';
+
+const etherscanKovanUrl = "https://api-kovan.etherscan.io/api?module=contract&action=getabi&address=";
 
 export class Contract {
     abi: Object;

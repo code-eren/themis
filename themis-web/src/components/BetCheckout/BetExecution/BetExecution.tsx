@@ -1,10 +1,11 @@
-import { Grid, Typography, CircularProgress, Link, Chip } from "@mui/material";
+import { Grid, Typography, CircularProgress, Link } from "@mui/material";
 import { Box } from "@mui/system";
+import { etherscanKovan } from "../../../etherscan/constants";
 import { BetCheckoutState } from "../../../interfaces/BetCheckoutState";
 import { Match } from "../../../interfaces/Match";
 import { getTeamOdds } from "../../../redux/selectors/TeamOddsSelectors";
 import * as utils from '../../../utils';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { ExternalLink } from "../../ExternalLink/ExternalLink";
 
 interface BetExecutionProp {
     match: Match;
@@ -25,14 +26,10 @@ export function BetExecution(props: BetExecutionProp) {
             <Typography>
                 Bet has been submitted. You can check out this 
                 bet's status in <Link href="/bets">My Bets</Link> and
-                you can verify on{' '}
-                <Chip
+                you can verify that the transaction exists on{' '}
+                <ExternalLink
                     label="Etherscan"
-                    component="a"
-                    href={`https://kovan.etherscan.io/tx/${props.betCheckoutState.transactionHash}`}
-                    target="_blank"
-                    icon={<OpenInNewIcon fontSize="small"/>}
-                    clickable
+                    href={etherscanKovan.txUrl + props.betCheckoutState.transaction?.transactionHash}
                 />.
             </Typography>
         </Grid>;
@@ -50,7 +47,7 @@ export function BetExecution(props: BetExecutionProp) {
             </Grid>
             <Grid item xs={5}>
                 <Typography textAlign="right">
-                    {props.betCheckoutState.bidAmount} ETH
+                    {props.betCheckoutState.bet.bidAmount} ETH
                 </Typography>
             </Grid>
             {

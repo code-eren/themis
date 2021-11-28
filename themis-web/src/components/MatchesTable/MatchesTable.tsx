@@ -1,13 +1,21 @@
-import React from 'react';
 import {
     Table,
     TableHead,
     TableRow,
     TableBody,
-    TableCell
+    TableCell,
+    Checkbox
 } from '@mui/material';
+import { etherscanKovan } from '../../etherscan/constants';
 import { Match } from '../../interfaces/Match';
 import * as utils from '../../utils';
+import { ExternalLink } from '../ExternalLink/ExternalLink';
+import {
+    CheckBoxOutlineBlank,
+    CheckBox,
+    Check,
+    Close
+} from '@mui/icons-material';
 
 interface MatchesTableProps {
     matches: Match[];
@@ -17,7 +25,6 @@ interface MatchesTableProps {
 export function MatchesTable(props: MatchesTableProps) {
     const handleTableRowClicked = (match: Match) => {
         props.onMatchClicked(match.ID);
-        console.log(match.ID)
     };
     return (
         <Table>
@@ -29,6 +36,8 @@ export function MatchesTable(props: MatchesTableProps) {
                     <TableCell>Away</TableCell>
                     <TableCell>Tie</TableCell>
                     <TableCell>Start</TableCell>
+                    <TableCell>Contract</TableCell>
+                    <TableCell>Keeper?</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
@@ -41,6 +50,17 @@ export function MatchesTable(props: MatchesTableProps) {
                             <TableCell>{utils.otos(match.tie.odds)}</TableCell>
                             <TableCell>{utils.otos(match.away.odds)}</TableCell>
                             <TableCell>{utils.ttos(match.startTimestamp)}</TableCell>
+                            <TableCell>
+                                <ExternalLink label="Etherscan" href={etherscanKovan.contractUrl+match.contractAddress} />
+                            </TableCell>
+                            <TableCell>
+                                <Checkbox
+                                    disableRipple
+                                    checked={true}
+                                    checkedIcon={match.isKeeperRegistered ? <Check /> : <Close />} 
+                                    color={match.isKeeperRegistered ? "success" : "error"} 
+                                />
+                            </TableCell>
                         </TableRow>
                     ))
                 }

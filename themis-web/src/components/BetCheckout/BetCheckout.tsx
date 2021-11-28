@@ -9,6 +9,7 @@ import { useWeb3ExecuteFunction } from "react-moralis";
 import { CampaignContract } from "../../web3/campaign";
 import { Match } from "../../interfaces/Match";
 import { finalize, setError, submit } from "../../redux/actions/BetCheckoutActions";
+import { Transaction } from "../../interfaces/Bet";
 
 export interface BetCheckoutProps {
     match: Match | null;
@@ -32,14 +33,30 @@ export function BetCheckout(props: BetCheckoutProps) {
     const handleBack = () => {
         setCurrentStep((currentStep) => currentStep - 1);
     }
+
     const handleSubmit = () => {
-        const teamId = props.betCheckoutState.teamID;
-        const amount = props.betCheckoutState.bidAmount;
+        const teamId = props.betCheckoutState.bet.teamID;
+        const amount = props.betCheckoutState.bet.bidAmount;
         submit();
-        fetch({ 
-            params: campaignContract.bid(teamId, amount), 
+        let contractTeamId: number = -1;
+        if (props.match !== null) {
+            if (props.match.home.team.ID === teamId) {
+                contractTeamId = 0;
+            } else if (props.match.away.team.ID === teamId) {
+                contractTeamId = 1;
+            } else if (props.match.tie.team.ID === teamId) {
+                contractTeamId = 2;
+            }
+        }
+        fetch({
+            params: campaignContract.bid(contractTeamId.toString(), amount), 
             onError: error => setError(error.message),
-            onSuccess: (data: any) => finalize(data.transactionHash)
+            onSuccess: (transaction: any) => {
+                finalize({
+                    ...transaction,
+                    contractAddress: campaignContract.contractAddress // TODO: ask Moralis dev team why contract address is null
+                });
+            }
         });
     }
 
