@@ -20,9 +20,9 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
 
     address private owner;
     uint256 public gameId;
-    uint256 public odds0; // odd that team0 wins 1.1 -> 110 , bid 1, get 1.1 back
-    uint256 public odds1; // odd that team1 wins 4.1 -> 410 , bid 1, get 4.1 back
-    uint256 public oddsDraw; // odd of draw wins 3   -> 300 , bid 1, get 3 back
+    int public odds0; // odd that team0 wins 1.1 -> 110 , bid 1, get 1.1 back
+    int public odds1; // odd that team1 wins 4.1 -> 410 , bid 1, get 4.1 back
+    int public oddsDraw; // odd of draw wins 3   -> 300 , bid 1, get 3 back
     uint256 public expectedFulfillTime; // expectedFulfillTime to fulfill data
     // normally a bit earlier than the expected end of the match,
     // should also be periodically fulfilled by the keeper to keep updated with real-world situation
@@ -44,10 +44,21 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     // 2. how dynamic odds are adjusted
     uint public riskMode;
 
-    int[3] riskMode2maxTolerance = [int(0.1 ether), 0.2 ether, 0.3 ether];
+    int[3] riskMode2maxTolerance = [int(0.01 ether), 0.05 ether, 0.1 ether];
+
+    uint public amountBidOnHomeTeam;
+    uint public amountBidOnAwayTeam;
+    uint public amountBidOnDraw;
+
+    int public xyratio_lower;
+    int public xyratio_upper;
+    int public xzratio_lower;
+    int public xzratio_upper;
+    int public yzratio_lower;
+    int public yzratio_upper;
 
     struct Bid {
-        uint256 odd;
+        int odd;
         uint256 amount;
         uint256 teamId;
     }
@@ -93,9 +104,9 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         address oracle,
         uint256 _interval,
         uint256 _gameId,
-        uint256 _initialOdds0,
-        uint256 _initialOdds1,
-        uint256 _drawodds,
+        int _initialOdds0,
+        int _initialOdds1,
+        int _drawodds,
         address _owner,
         uint256 _expectedFulfillTime,
         uint _riskMode
@@ -114,6 +125,33 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         // note claim can only be executed once data is fulfilled, 
         // so this number really can be anything, since it will be always reset before claim
         winnedTeamId = 42; 
+        int potential_v1 = (_initialOdds1 * _drawodds - _initialOdds1 - _drawodds) / _drawodds;
+        int potential_v2 = _drawodds / ((_initialOdds0 * _drawodds) / 100 - _initialOdds0 - _drawodds);
+        if (potential_v1 < potential_v2) {
+            xyratio_lower = potential_v1 < 0 ? int(0) : potential_v1;
+            xyratio_upper = potential_v2 < 0 ? int(0) : potential_v2;
+        }else{
+            xyratio_lower = potential_v2 < 0 ? int(0) : potential_v2;
+            xyratio_upper = potential_v1 < 0 ? int(0) : potential_v1;
+        }
+        potential_v1 = (_initialOdds1 * _drawodds - _initialOdds1 - _drawodds) / _initialOdds1;
+        potential_v2 = _initialOdds1 / ((_initialOdds0 *  _initialOdds1) / 100 - _initialOdds0 -  _initialOdds1);
+         if (potential_v1 < potential_v2) {
+            xzratio_lower = potential_v1 < 0 ? int(0) : potential_v1;
+            xzratio_upper  =   potential_v2 < 0 ? int(0) : potential_v2;
+        }else{
+            xzratio_lower = potential_v2 < 0 ? int(0) : potential_v2;
+            xzratio_upper  =  potential_v1 < 0 ? int(0) : potential_v1;
+        }
+        potential_v1 = (_initialOdds0 * _drawodds - _initialOdds0 - _drawodds) / _initialOdds0;
+        potential_v2 = _initialOdds0  / ((_initialOdds0 * _initialOdds1) / 100 - _initialOdds0 - _initialOdds1);
+         if (potential_v1 < potential_v2) {
+            yzratio_lower = potential_v1 < 0 ? int(0) : potential_v1;
+            yzratio_upper =  potential_v2 < 0 ? int(0) : potential_v2;
+        }else{
+            yzratio_lower = potential_v2 < 0 ? int(0) : potential_v2;
+            yzratio_upper =  potential_v1 < 0 ? int(0) : potential_v1;
+        }
         riskMode = _riskMode;
         emit RiskModeSet(msg.value, _riskMode, msg.sender);
         setPublicChainlinkToken();
@@ -188,6 +226,7 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
             require((drawpayoff + int(msg.value) * int(oddsDraw))/100 <= riskMode2maxTolerance[riskMode]);
         }
         
+        // push the bid to addr2bidder
         addr2bidder[msg.sender].bids.push(
             Bid({
                 odd: _teamId == 0 ? odds0 : _teamId == 1
@@ -197,22 +236,64 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
                 teamId: _teamId
             })
         );
-        
+        // set bidded as true
         addr2bidder[msg.sender].bidded = true;
+
+        // adjust odds and risk control computation
+        // see our lite paper on how this is designed and work in detail
         if (_teamId == 0){
+            // bid on hometeam
+            amountBidOnHomeTeam += msg.value;
             awaypayoff -= int(msg.value); // assume accuracy loss is not an issue here, should not allow bid too much money anyway
             drawpayoff -= int(msg.value);
             homepayoff += int(msg.value) * int(odds0);
+            int idealxy = (xyratio_lower + xyratio_upper) / 2;
+            int deltaoddsxy = odds0 * ((idealxy * int(amountBidOnAwayTeam) - int(amountBidOnHomeTeam)) / int(amountBidOnHomeTeam));
+            int idealxz = (xzratio_lower + xzratio_upper) / 2;
+            int deltaoddsxz = odds0 * ((idealxz * int(amountBidOnDraw) - int(amountBidOnHomeTeam)) / int(amountBidOnHomeTeam));
+            int changeInOdd0 = 0;
+            if (deltaoddsxy < 0 && deltaoddsxz < 0) {
+                changeInOdd0 = deltaoddsxy < deltaoddsxz ? deltaoddsxy : deltaoddsxz;
+            }else if (deltaoddsxy > 0 && deltaoddsxz > 0){
+                changeInOdd0 = deltaoddsxy > deltaoddsxz ? deltaoddsxy : deltaoddsxz;
+            }
+            odds0 = (odds0 + changeInOdd0) < 0 ? int(0) : (odds0 + changeInOdd0);
         }else if (_teamId == 1){
+            // bid on awayteam
+            amountBidOnAwayTeam += msg.value;
             homepayoff -= int(msg.value); 
             drawpayoff -= int(msg.value);
             awaypayoff += int(msg.value) * int(odds1);
+            int idealyx =  (1 / xyratio_lower + 1 / xyratio_upper) / 2;
+            int deltaoddsyx = odds1 * ((idealyx * int(amountBidOnHomeTeam) - int(amountBidOnAwayTeam)) / int(amountBidOnAwayTeam));
+            int idealyz = (yzratio_lower + yzratio_upper) / 2;
+            int deltaoddsyz = odds1 * ((idealyz * int(amountBidOnDraw) - int(amountBidOnAwayTeam)) / int(amountBidOnAwayTeam));
+            int changeInOdd1 = 0;
+            if (deltaoddsyx < 0 && deltaoddsyz < 0) {
+                changeInOdd1 = deltaoddsyx < deltaoddsyz ? deltaoddsyx : deltaoddsyz;
+            }else if (deltaoddsyx > 0 && deltaoddsyz > 0){
+                changeInOdd1 = deltaoddsyx > deltaoddsyz ? deltaoddsyx : deltaoddsyz;
+            }
+            odds1 = (odds1 + changeInOdd1) < 0 ? int(0) : (odds1 + changeInOdd1);
         }else{
+            // bid on draw
+            amountBidOnDraw += msg.value;
             homepayoff -= int(msg.value);
             drawpayoff -= int(msg.value);
             drawpayoff += int(msg.value) * int(oddsDraw);
+            int idealzx = (1 / xzratio_lower + 1 / xzratio_upper) / 2;
+            int deltaoddszx = oddsDraw * ((idealzx * int(amountBidOnHomeTeam) - int(amountBidOnDraw)) / int(amountBidOnDraw));
+            int idealzy = (1 / yzratio_lower + 1 / yzratio_upper) / 2;
+            int deltaoddszy = oddsDraw * ((idealzy * int(amountBidOnAwayTeam) - int(amountBidOnDraw)) / int(amountBidOnDraw));
+            int changeInDraw = 0;
+            if (deltaoddszx < 0 && deltaoddszy < 0) {
+                changeInDraw = deltaoddszx < deltaoddszy ? deltaoddszx : deltaoddszy;
+            }else if (deltaoddszx > 0 && deltaoddszy > 0){
+                changeInDraw = deltaoddszx > deltaoddszy ? deltaoddszx : deltaoddszy;
+            }
+            oddsDraw = (oddsDraw + changeInDraw) < 0 ? int(0) : (oddsDraw + changeInDraw);
         }
-        emit BidSuccess(msg.sender, msg.value, _teamId);
+        emit BidSuccess(msg.sender, msg.value, _teamId);    
     }
 
     // claim
@@ -223,20 +304,20 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
             fulfilled,
             "can't claim before result is fulfilled from oracle"
         );
-        uint256 amount = 0;
+        int amount = 0;
         for (uint256 i = 0; i < addr2bidder[sender].bids.length; i++) {
             Bid memory curbid = addr2bidder[sender].bids[i];
             if (curbid.teamId == winnedTeamId) {
-                amount += (curbid.odd * curbid.amount) / 100; //100 is decimal place for odd
+                amount += (curbid.odd * int(curbid.amount)) / 100; //100 is decimal place for odd
             }
         }
         //make the transfer to sender's account
         require(
-            address(this).balance >= amount,
+            address(this).balance >= uint(amount),
             "not enough balance in the contract to make the transfer"
         );
         if (amount > 0) {
-            payable(sender).transfer(amount);
+            payable(sender).transfer(uint(amount));
         }
     }
 

@@ -1,6 +1,5 @@
 import { CampaignFactory } from './factory';
-import { sendToken, delay } from '../utils/utility';
-import { register } from './keeper-registry/register';
+import { delay } from '../utils/utility';
 import { ethers } from 'ethers';
 
 (async () => {
@@ -28,13 +27,13 @@ import { ethers } from 'ethers';
     checkTime,
     riskMode, 
     {
-      value: ethers.utils.parseEther("0.1")
+      value: ethers.utils.parseEther("0.01")
     }
   );
   console.log(tx);
   console.log('Creating a new Campaign ...');
   // wait 10s for the transaction to be included
-  await delay(10000);
+  await delay(15000);
   console.log('Campaign created');
   // get clone contract addresses
   let newAddress = await cf.getAddress(gameId);

@@ -28,9 +28,9 @@ contract CampaignFactory {
         address _oracle,
         uint256 _interval,
         uint256 _gameId,
-        uint256 _initialOdds0,
-        uint256 _initialOdds1,
-        uint256 _drawodds,
+        int _initialOdds0,
+        int _initialOdds1,
+        int _drawodds,
         uint256 _expectedFulfillTime,
         uint _riskMode
     ) external payable returns (address) {
