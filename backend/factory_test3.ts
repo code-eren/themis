@@ -20,8 +20,6 @@ import { register } from './keeper-registry/register';
     oracleAddr,
     interval,
     gameId,
-    teamId0,
-    teamId1,
     odds0,
     odds1,
     odds2,

@@ -18,7 +18,7 @@ export class Schedule {
   SeasonType: number;
 
   @Column({ nullable: true })
-  Group: number;
+  Group: string;
 
   @Column({ nullable: true })
   AwayTeamId: number;

@@ -1,5 +1,9 @@
+import { Database } from '../db/db';
 const PythonShell = require('python-shell').PythonShell;
 
+const db = new Database();
+
+// return registered upkeepID
 export async function register(
   email: string,
   upkeepName: string,
@@ -14,20 +18,43 @@ export async function register(
     args: [email, upkeepName, upkeepAddr, gasLimit, startLink]
   };
 
-  PythonShell.run('register.py', options, function (err, results) {
-    if (err) throw err;
-    // Results is an array consisting of messages collected during execution
-    console.log('results: %j', results);
+  // synchronously run the python script
+  const {
+    success,
+    err = '',
+    results
+  } = await new Promise((resolve, reject) => {
+    PythonShell.run('register.py', options, function (err, results) {
+      if (err) {
+        reject({ success: false, err });
+      }
+
+      console.log('PythonShell results: %j', results);
+
+      resolve({ success: true, results });
+    });
   });
+
+  console.log('python call ends');
+
+  if (!success) {
+    console.log('Test Error: ' + err);
+    return;
+  }
+
+  console.log('The result is: ' + results);
+
+  return results[0];
 }
 
 // small test
 // (async () => {
-//   await register(
+//   let res = await register(
 //     'wuzhengxun@outlook.com',
 //     'upkeep',
 //     '0xce603D6264e40e6D4Fad35AFcCEEF1Cd68c7a7C7',
 //     200000,
 //     25
 //   );
+//   console.log("id is", res)
 // })();

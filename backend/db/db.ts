@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Schedule } from './entity/schedule';
 import { Campaign } from './entity/campaign';
+import * as fs from 'fs';
 
 export class Database {
   private connectionManager: ConnectionManager;
@@ -26,10 +27,20 @@ export class Database {
         connection = await connection.connect();
       }
     } else {
+      const db_password = fs
+        .readFileSync(
+          '/mnt/c/users/16073/desktop/clhackathon/themis/backend/db/db_password'
+        )
+        .toString()
+        .trim();
       const connectionOptions: ConnectionOptions = {
         name: 'default',
-        type: 'sqlite',
-        database: '../themis.db', // create a db in root of backend
+        type: 'mysql',
+        host: '127.0.0.1',
+        port: 3306,
+        username: 'root',
+        password: db_password,
+        database: 'themisDB', // create a db in root of backend
         synchronize: true,
         logging: false,
         entities: [Schedule, Campaign]

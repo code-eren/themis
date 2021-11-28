@@ -2,7 +2,6 @@ var axios = require('axios').default;
 import { Schedule } from '../db/entity/schedule';
 import { Campaign } from '../db/entity/campaign';
 import { Database } from '../db/db';
-import { kovanSetup } from '../../utils/setup';
 
 if (!process.env.SPORTSDATAIO_API_KEY) {
   console.error('please set the api key!');
@@ -125,8 +124,6 @@ export async function querySchedule(date: string) {
               oracleAddr: '0xC25d00698c4c48557B363F35AFe09d8f7907296c',
               interval: 15,
               gameId: schedule['GameId'],
-              teamId0: schedule['HomeTeamId'],
-              teamId1: schedule['AwayTeamId'],
               team0MoneyLine: schedule['HomeTeamMoneyLine'],
               team1MoneyLine: schedule['AwayTeamMoneyLine'],
               drawMoneyLine: schedule['DrawMoneyLine'],
@@ -143,7 +140,7 @@ export async function querySchedule(date: string) {
                   let campaign = new Campaign();
                   campaign.DeployedAddress = res.data.deployedAddr;
                   campaign.GameId = schedule['GameId'];
-                  campaign.KeeperAddress = null;
+                  campaign.KeeperAddress = res.data.keeperURL;
                   campaign.OracleAddress =
                     '0xC25d00698c4c48557B363F35AFe09d8f7907296c';
                   campaign.ScheduleId = gameid2scheduleid[schedule['GameId']];

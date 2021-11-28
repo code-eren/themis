@@ -7,8 +7,6 @@ import { CampaignFactory } from './factory';
   let cf = new CampaignFactory('kovan');
   let oracleAddr = '0xC25d00698c4c48557B363F35AFe09d8f7907296c';
   let gameId = 702;
-  let teamId0 = 0;
-  let teamId1 = 1;
   let odds0 = 410;
   let odds1 = 110;
   let odds2 = 120;
@@ -18,8 +16,6 @@ import { CampaignFactory } from './factory';
     oracleAddr,
     interval,
     gameId,
-    teamId0,
-    teamId1,
     odds0,
     odds1,
     odds2,
