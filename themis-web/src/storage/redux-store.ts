@@ -1,45 +1,22 @@
-import { Match } from '../interfaces/Match';
-import { BetCheckoutForm } from '../interfaces/BetCheckoutForm';
-import { createStore } from 'redux';
-import reducers from '../reducers';
+import { RootState } from '../redux/reducers/index';
+import { createStore, applyMiddleware, Middleware } from 'redux';
+import reducers from '../redux/reducers';
+import { BET_CHECKOUT, MATCHES, USER_BETS, CONTRACTS_STATE, LOGS_STATE } from './constants';
 
-export const storeBet = (bet: Match, betCheckoutForm: BetCheckoutForm) => {
-  let matchId = JSON.stringify(bet);
-  let betId = JSON.stringify(betCheckoutForm);
-  let unparsedBets = localStorage.getItem(matchId);
-  if (unparsedBets === null) {
-    let bets = [betId];
-    localStorage.setItem(matchId, JSON.stringify(bets));
-  } else {
-    let bets: string[] = JSON.parse(unparsedBets);
-    bets.push(betId);
-    localStorage.setItem(matchId, JSON.stringify(bets));
-  }
+const storeStateInCache: Middleware<{}, RootState> = storeApi => next => action => {
+  const afterDispatch = next(action);
+  // cache state after dispatch (but only betCheckout and userBets)
+  const state = storeApi.getState();
+  localStorage.setItem(BET_CHECKOUT, JSON.stringify(state.betCheckout));
+  localStorage.setItem(USER_BETS, JSON.stringify(state.userBets));
+  localStorage.setItem(MATCHES, JSON.stringify(state.matches));
+  localStorage.setItem(CONTRACTS_STATE, JSON.stringify(state.contractsState));
+  localStorage.setItem(LOGS_STATE, JSON.stringify(state.logsState))
+  return afterDispatch;
 };
 
-export interface BetsForMatch {
-  match: Match;
-  bets: BetCheckoutForm[];
-}
-
-export const getBets = (): BetsForMatch[] => {
-  let allBets: BetsForMatch[] = [];
-  for (var matchId in localStorage) {
-    let match = matchId;
-    let matchValue = localStorage.getItem(matchId);
-    if (matchValue !== null) {
-      let betStrings: string[] = JSON.parse(matchValue);
-      let bets: BetCheckoutForm[] = betStrings
-        .map((betStr) => JSON.parse(betStr))
-        .filter((res) => res !== null);
-      console.log(JSON.parse(matchId));
-      console.log(bets);
-      allBets.push({ match: JSON.parse(matchId), bets });
-    }
-  }
-  console.log(allBets);
-  return allBets;
-};
-
-export const store = createStore(reducers);
+export const store = createStore(
+  reducers,
+  applyMiddleware(storeStateInCache)
+);
 export const dispatch = store.dispatch;

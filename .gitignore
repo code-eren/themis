@@ -7,3 +7,4 @@ betmodel/
 ~/
 .openzeppelin/.session
 .vscode
+.DS_Store

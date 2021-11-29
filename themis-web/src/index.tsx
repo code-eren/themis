@@ -5,9 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { MoralisProvider } from 'react-moralis';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import reducers from './reducers';
 import { store } from './storage/redux-store';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 const moralisCreds = {
   appId: "7Iy53OzFq24gwU0uVz1hHouvuutzjxzw52L5U6Jm",
@@ -17,7 +17,8 @@ const moralisCreds = {
 render(
   <MoralisProvider appId={moralisCreds.appId} serverUrl={moralisCreds.serverUrl}>
     <Provider store={store}>
-      <App />
+        <ToastContainer hideProgressBar />
+        <App/>
     </Provider>
   </MoralisProvider>,
   document.getElementById('root')
