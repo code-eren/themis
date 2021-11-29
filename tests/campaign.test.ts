@@ -4,7 +4,7 @@ import {CampaignFactory} from "../backend/factory"
 // let campaignAddr = "0xD5847f33b9787Df55f3866B0AE5Cf86e5B6b5407";
 
 // TODO: add more test for different edge cases, and add agent-based simulation
-describe("TestBid", () => {
+describe("TestCampaign", () => {
   it("bid 0.001 ether", async () => {
     let cf = new CampaignFactory('kovan');
     await cf.init();
@@ -51,4 +51,8 @@ describe("TestBid", () => {
 
     console.log(tx)    
   });
+
 });
+
+
+

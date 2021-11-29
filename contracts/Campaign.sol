@@ -56,6 +56,9 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     int public yzratio_lower;
     int public yzratio_upper;
 
+    uint public numOfUniqueAddrBidded;
+    uint public numOfAddrClaimed;
+
     struct Bid {
         int odd;
         uint256 amount;
@@ -174,6 +177,7 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         emit Performupkeepcalled(msg.sender);
         lastTimeStamp = block.timestamp;
         // preset jobId 
+        // TODO change it to query from aggragator
         requestScore("7bf0064504c04021a43b9ebadddfedfb");
         performData;
     }
@@ -207,6 +211,7 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         int indexed newHomepayoff,
         int indexed maxTolerance
     );
+
     // bid team with teamId to win
     // 0: hometeam
     // 1: awayteam
@@ -237,19 +242,6 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
             require(((drawpayoff + int(msg.value) * int(oddsDraw))/100) <= riskMode2maxTolerance[riskMode],
             "potential payoff would exceed maxTolerance");
         }
-        
-        // push the bid to addr2bidder
-        addr2bidder[msg.sender].bids.push(
-            Bid({
-                odd: _teamId == 0 ? odds0 : _teamId == 1
-                    ? odds1
-                    : oddsDraw,
-                amount: msg.value,
-                teamId: _teamId
-            })
-        );
-        // set bidded as true
-        addr2bidder[msg.sender].bidded = true;
 
         // adjust odds and risk control computation
         // see our lite paper on how this is designed and work in detail
@@ -305,13 +297,37 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
             }
             oddsDraw = (oddsDraw + changeInDraw) < 0 ? int(0) : (oddsDraw + changeInDraw);
         }
+
+        // if it's a new address, increment numOfUniqueAddrBidded
+        if (!addr2bidder[msg.sender].bidded){
+            numOfUniqueAddrBidded += 1;
+        }
+        
+        // push the bid to addr2bidder
+        addr2bidder[msg.sender].bids.push(
+            Bid({
+                odd: _teamId == 0 ? odds0 : _teamId == 1
+                    ? odds1
+                    : oddsDraw,
+                amount: msg.value,
+                teamId: _teamId
+            })
+        );
+        // set bidded as true
+        addr2bidder[msg.sender].bidded = true;
+
         emit BidSuccess(msg.sender, msg.value, _teamId);    
     }
+
+    event Claimed(
+        address indexed claimer,
+        int indexed amount
+    );
 
     // claim
     function claim() external {
         address sender = msg.sender;
-        require(addr2bidder[sender].bidded, "can't claim if not bidded before");
+        require(addr2bidder[sender].bidded, "can't claim if not bidded before or already claimed");
         require(
             fulfilled,
             "can't claim before result is fulfilled from oracle"
@@ -331,6 +347,11 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
         if (amount > 0) {
             payable(sender).transfer(uint(amount));
         }
+        // set it to false so can't claim again
+        addr2bidder[sender].bidded = false;
+        // increment the unique address that has been claimed
+        numOfAddrClaimed++;
+        emit Claimed(sender, amount);
     }
 
     // enable the contract to receive eth
@@ -340,11 +361,19 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
 
     // TODO: need test
     function withdrawLink() public isOwner {
+        require(fulfilled, "can't retrive link out until the data has been fulfilled");
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
         require(
             link.transfer(msg.sender, link.balanceOf(address(this))),
             "Unable to transfer"
         );
+    }
+
+    // withdraw eth after all bidders have claimed (TODO: or expired to avoid block) 
+    function payout () public isOwner returns(bool res) {
+        require(numOfAddrClaimed >= numOfUniqueAddrBidded, "can't retrive eth out since some bidder hasn't claimed");
+        payable(owner).transfer(address(this).balance);
+        return true;
     }
 
     //----------------utility---------------------------------------------------
