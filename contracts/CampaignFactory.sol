@@ -28,13 +28,14 @@ contract CampaignFactory {
         address _oracle,
         uint256 _interval,
         uint256 _gameId,
-        uint256 _initialOdds0,
-        uint256 _initialOdds1,
-        uint256 _drawodds,
-        uint256 _expectedFulfillTime
-    ) external returns (address) {
+        int _initialOdds0,
+        int _initialOdds1,
+        int _drawodds,
+        uint256 _expectedFulfillTime,
+        uint _riskMode
+    ) external payable returns (address) {
         address clone = Clones.clone(implementationContract);
-        Campaign(payable(clone)).initialize(
+        Campaign(payable(clone)).initialize{value:msg.value}(
             _oracle,
             _interval,
             _gameId,
@@ -42,7 +43,8 @@ contract CampaignFactory {
             _initialOdds1,
             _drawodds,
             msg.sender,
-            _expectedFulfillTime
+            _expectedFulfillTime,
+            _riskMode
         );
         gameId2Addr[_gameId] = clone;
         emit Clonecreated(clone, _gameId);

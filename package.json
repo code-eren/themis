@@ -4,11 +4,14 @@
   "description": "",
   "main": "truffle-config.js",
   "directories": {
+    "backend": "backend",
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prettier-format": "prettier --config .prettierrc '**/*.ts' --write"
+    "build": "npx tsc",
+    "prepare": "npm run build",
+    "prettier-format": "prettier --config .prettierrc '**/*.ts' --write",
+    "test": "mocha -r ts-node/register 'tests/**/*.ts' --exit --timeout 1000000"
   },
   "repository": {
     "type": "git",
@@ -39,6 +42,7 @@
   "devDependencies": {
     "@openzeppelin/cli": "^2.8.2",
     "@openzeppelin/truffle-upgrades": "^1.10.0",
+    "@types/mocha": "^9.0.0",
     "@types/server": "^1.0.4",
     "prettier": "^2.4.1",
     "truffle-plugin-verify": "^0.5.18"

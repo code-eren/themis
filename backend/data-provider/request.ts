@@ -2,6 +2,7 @@ var axios = require('axios').default;
 import { Schedule } from '../db/entity/schedule';
 import { Campaign } from '../db/entity/campaign';
 import { Database } from '../db/db';
+import { ethers } from 'ethers';
 
 if (!process.env.SPORTSDATAIO_API_KEY) {
   console.error('please set the api key!');
@@ -127,8 +128,11 @@ export async function querySchedule(date: string) {
               team0MoneyLine: schedule['HomeTeamMoneyLine'],
               team1MoneyLine: schedule['AwayTeamMoneyLine'],
               drawMoneyLine: schedule['DrawMoneyLine'],
-              expectedFulfillTime: 0 // TODO need to get from data provider rather than hardcoded
-              // nonce: startNonce
+              expectedFulfillTime: 0, // TODO need to get from data provider rather than hardcoded
+              riskMode: 0,
+              overrides: {
+                value: ethers.utils.parseEther('0.01')
+              }
             })
             .then(async (res) => {
               console.log(`statusCode: ${res.status}`);

@@ -21,6 +21,8 @@ export interface CreateCampaignRequest {
     team1MoneyLine: number;
     drawMoneyLine: number;
     expectedFulfillTime: number;
+    riskMode: number;
+    overrides: object;
   };
 }
 
@@ -34,7 +36,9 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
     moneyLine2contractOdds(ctx.data.team0MoneyLine),
     moneyLine2contractOdds(ctx.data.team1MoneyLine),
     moneyLine2contractOdds(ctx.data.drawMoneyLine),
-    ctx.data.expectedFulfillTime
+    ctx.data.expectedFulfillTime,
+    ctx.data.riskMode,
+    ctx.data.overrides
   );
   console.log(tx);
   await delay(15000);
@@ -77,7 +81,7 @@ export const createCampaign = async (ctx: CreateCampaignRequest) => {
       'upkeep',
       deployedAddr,
       200000,
-      25
+      50
     );
     // TODO: error handling here
     let keeperurl = 'https://keepers.chain.link/kovan/' + res;

@@ -1,6 +1,7 @@
 import { CampaignFactory } from './factory';
 import { sendToken, delay } from '../utils/utility';
 import { register } from './keeper-registry/register';
+import { ethers } from 'ethers';
 
 (async () => {
   let cf = new CampaignFactory('kovan');
@@ -23,7 +24,11 @@ import { register } from './keeper-registry/register';
     odds0,
     odds1,
     odds2,
-    checkTime
+    checkTime,
+    0,
+    {
+      value: ethers.utils.parseEther('0.1')
+    }
   );
   console.log(tx);
   console.log('Creating a new Campaign ...');
