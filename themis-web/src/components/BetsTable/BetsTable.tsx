@@ -1,42 +1,133 @@
-import React from 'react';
 import {
     Table,
     TableHead,
     TableRow,
     TableBody,
-    TableCell
+    TableCell,
+    Chip,
+    Typography
 } from '@mui/material';
-import { Bet } from '../../interfaces/Bet';
-import * as utils from '../../utils';
+import { BetMade } from '../../interfaces/Bet';
+import { useWeb3ExecuteFunction } from 'react-moralis';
+import { ExternalLink } from '../ExternalLink/ExternalLink';
+import { etherscanKovan } from '../../etherscan/constants';
+import { CampaignContractProperties } from '../../interfaces/CampaignContract';
+import { CampaignContract } from '../../web3/campaign';
+import { store } from '../../storage/redux-store';
+import { teamIdToTeamName } from '../../utils';
 
-interface BetsTableProps {
-    bets: Bet[];
-    onBetClicked: (betID: string) => void;
+export interface BetsTableProps {
+    betsMade: BetMade[];
+    contractProps: CampaignContractProperties[];
 }
 
 export function BetsTable(props: BetsTableProps) {
-    return (
-        <Table>
-            <TableHead>
-                <TableRow>
-                    <TableCell>Match</TableCell>
-                    <TableCell>Side Selected</TableCell>
-                    <TableCell>Amount (ETH)</TableCell>
-                    <TableCell>Submitted</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {
-                    props.bets.map((bet) => (
-                        <TableRow>
-                            <TableCell>{bet.matchID}</TableCell>
-                            <TableCell>{bet.teamID}</TableCell>
-                            <TableCell>{bet.bidAmount}</TableCell>
-                            <TableCell>{utils.ttos(bet.timestamp)}</TableCell>
-                        </TableRow>
-                    ))
+    const { fetch } = useWeb3ExecuteFunction();
+
+    const matches = store.getState().matches.matches;
+
+    const claimWinnings = (betMade: BetMade, won: boolean) => () => {
+        if (won) {
+            const contract = new CampaignContract(betMade.transaction.contractAddress);
+            fetch(contract.claimParams());
+        }
+    }
+
+    const getStatusComp = (betMade: BetMade) => {
+        if (!props.contractProps) {
+            return <></>;
+        }
+        const cp = props.contractProps.find(cp => cp.contractAddress === betMade.transaction.contractAddress);
+        let status = <Typography>No contract found</Typography>
+        if (cp !== undefined) {
+            let chipProps: {
+                label: string;
+                color: "secondary" | "success" | "error" | "primary" | "default" | "info" | "warning" | undefined;
+            } = {
+                label: "",
+                color: undefined
+            };
+            if (cp.isFulfilled.status.loading) {
+                chipProps.label = "Loading...";
+                chipProps.color = "secondary";
+            } else if (cp.isFulfilled.status.error !== "") {
+                chipProps.label = "Error";
+                chipProps.color = undefined;
+            } else if (cp.isFulfilled.value) {
+                if (cp.winnerTeamId.status.loading) {
+                    chipProps.label = "Loading...";
+                    chipProps.color = "secondary";
+                } else if (cp.isFulfilled.status.error) {
+                    chipProps.label = "Error";
+                    chipProps.color = undefined;
+                } else if (cp.winnerTeamId.value === betMade.bet.teamID) {
+                    chipProps.label = "Won - Unclaimed";
+                    if (betMade.claimable === true) {
+                        chipProps.label += " - Unclaimed";
+                    } else if (betMade.claimable === false) {
+                        chipProps.label += " - Claimed";
+                    }
+                    chipProps.color = "success";
+                } else {
+                    chipProps.label = "Lost";
+                    chipProps.color = "error";
                 }
-            </TableBody>
-        </Table>
+            } else {
+                chipProps.label = "Active";
+                chipProps.color = "primary";
+            }
+            status = <Chip
+                label={chipProps.label}
+                color={chipProps.color}
+                clickable={chipProps.label==="Won"}
+                onClick={claimWinnings(betMade, chipProps.label==="Won")}
+            />
+        }
+        return status;
+    }
+    return (
+        <>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Match</TableCell>
+                        <TableCell>Side Selected</TableCell>
+                        <TableCell>Amount (ETH)</TableCell>
+                        <TableCell>Tx Hash</TableCell>
+                        <TableCell>Contract</TableCell>
+                        <TableCell>Status</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {
+                        props.betsMade && props.betsMade.map((betMade) => {
+                            let match = matches.find(m => m.ID === betMade.bet.matchID);
+                            return (
+                                <TableRow>
+                                    <TableCell>{betMade.bet.matchID}</TableCell>
+                                    <TableCell>{teamIdToTeamName(betMade.bet.teamID, match)}</TableCell>
+                                    <TableCell>{betMade.bet.bidAmount}</TableCell>
+                                    <TableCell>
+                                        <ExternalLink
+                                            label="Etherscan"
+                                            href={etherscanKovan.txUrl+betMade.transaction.transactionHash}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <ExternalLink
+                                            label="Etherscan"
+                                            href={etherscanKovan.contractUrl+betMade.transaction.contractAddress}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        { getStatusComp(betMade) }
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })
+                    }
+                </TableBody>
+            </Table>
+        </>
     )
 }
