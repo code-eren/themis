@@ -129,9 +129,9 @@ export async function querySchedule(date: string) {
               team1MoneyLine: schedule['AwayTeamMoneyLine'],
               drawMoneyLine: schedule['DrawMoneyLine'],
               expectedFulfillTime: 0, // TODO need to get from data provider rather than hardcoded
-              riskMode: 0, 
+              riskMode: 0,
               overrides: {
-                value: ethers.utils.parseEther("0.01")
+                value: ethers.utils.parseEther('0.01')
               }
             })
             .then(async (res) => {

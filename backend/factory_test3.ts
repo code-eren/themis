@@ -27,7 +27,7 @@ import { register } from './keeper-registry/register';
     checkTime,
     0,
     {
-      value: ethers.utils.parseEther("0.1")
+      value: ethers.utils.parseEther('0.1')
     }
   );
   console.log(tx);

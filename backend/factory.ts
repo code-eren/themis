@@ -38,7 +38,7 @@ export class CampaignFactory {
     draw: number,
     checkTime: number,
     riskMode: number,
-    overrides: object,
+    overrides: object
   ) {
     return await this.campaignFactory.createCampaign(
       oracle_addr,

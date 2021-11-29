@@ -25,9 +25,9 @@ import { ethers } from 'ethers';
     odds1,
     odds2,
     checkTime,
-    riskMode, 
+    riskMode,
     {
-      value: ethers.utils.parseEther("0.01")
+      value: ethers.utils.parseEther('0.01')
     }
   );
   console.log(tx);
