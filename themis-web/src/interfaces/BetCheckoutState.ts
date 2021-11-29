@@ -1,7 +1,8 @@
+import { Bet, Transaction } from './Bet';
 export interface BetCheckoutState {
-  matchID: string;
-  teamID: string;
-  bidAmount: string;
+  bet: Bet;
+  transaction?: Transaction;
   error: string;
   loading: boolean;
+  finished: boolean;
 }

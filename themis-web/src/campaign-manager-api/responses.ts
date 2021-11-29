@@ -1,0 +1,70 @@
+// reponse for GET /campaigns
+export interface GetCampaignsResponse {
+    joinedCampaigns: Campaign[];
+}
+
+// campaign and match are synonymous
+export interface Campaign {
+    Campaign_Id: number | null;
+    Campaign_DeployedAddress: string | null;
+    Campaign_OracleAddress: string | null;
+    Campaign_KeeperAddress: string | null;
+    Campaign_GameId: number | null;
+    Campaign_ScheduleId: number | null;
+    Campaign_Timestamp: string | null;
+    schedule_Id: number | null;
+    schedule_GameId: number | null;
+    schedule_RoundId: number | null;
+    schedule_Season: number | null;
+    schedule_SeasonType: number | null;
+    schedule_Group: string | null;
+    schedule_AwayTeamId: number | null;
+    schedule_HomeTeamId: number | null;
+    schedule_VenueId: number | null;
+    schedule_Day: string | null;
+    schedule_DateTime: string | null;
+    schedule_Status: string | null;
+    schedule_Week: number | null;
+    schedule_Period: string | null;
+    schedule_Clock: string | null;
+    schedule_Winner: string | null;
+    schedule_VenueType: string | null;
+    schedule_AwayTeamKey: string | null;
+    schedule_AwayTeamName: string | null;
+    schedule_AwayTeamCountryCode: string | null;
+    schedule_AwayTeamScore: number | null;
+    schedule_AwayTeamScorePeriod1: number | null;
+    schedule_AwayTeamScorePeriod2: number | null;
+    schedule_AwayTeamScoreExtraTime: string | null;
+    schedule_AwayTeamScorePenalty: string | null;
+    schedule_HomeTeamKey: string | null;
+    schedule_HomeTeamName: string | null;
+    schedule_HomeTeamCountryCode: string | null;
+    schedule_HomeTeamScore: number | null;
+    schedule_HomeTeamScorePeriod1: number | null;
+    schedule_HomeTeamScorePeriod2: number | null;
+    schedule_HomeTeamScoreExtraTime: string | null;
+    schedule_HomeTeamScorePenalty: string | null;
+    schedule_HomeTeamMoneyLine: number | null;
+    schedule_AwayTeamMoneyLine: number | null;
+    schedule_DrawMoneyLine: number | null;
+    schedule_PointSpread: number | null;
+    schedule_HomeTeamPointSpreadPayout: number | null;
+    schedule_AwayTeamPointSpreadPayout: number | null;
+    schedule_OverUnder: number | null;
+    schedule_OverPayout: number | null;
+    schedule_UnderPayout: number | null;
+    schedule_Attendance: string | null;
+    schedule_Updated: string | null;
+    schedule_UpdatedUtc: string | null;
+    schedule_GlobalGameId: number | null;
+    schedule_GlobalAwayTeamId: number | null;
+    schedule_GlobalHomeTeamId: number | null;
+    schedule_ClockExtra: string | null;
+    schedule_ClockDisplay: string | null;
+    schedule_IsClosed: number | null;
+    schedule_HomeTeamFormation: string | null;
+    schedule_AwayTeamFormation: string | null;
+    schedule_PlayoffAggregateScore: string | null;
+    schedule_Timestamp: string | null;    
+}
