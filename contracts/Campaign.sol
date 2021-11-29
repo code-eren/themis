@@ -218,7 +218,7 @@ contract Campaign is ChainlinkClient, KeeperCompatibleInterface {
     // 2: draw
     function bid(uint256 _teamId) external payable {
         // can only bid if data hasn't been fulfilled and earlier than the deadline
-        require(!fulfilled && block.timestamp < bidDeadline,
+        require(block.timestamp < bidDeadline,
          "the contract already been fulfilled or the bid deadline has been passed");
         // currently this bid api can only be win/lose/draw
         // later can support bid on score
