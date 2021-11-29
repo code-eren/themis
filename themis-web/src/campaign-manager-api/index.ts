@@ -89,6 +89,7 @@ export const getMatches = () => {
           startTimestamp: timestampMillis,
           contractAddress: camp.Campaign_DeployedAddress ?? "",
           isKeeperRegistered: camp.Campaign_KeeperAddress !== null, // TODO: fetch from campaignAddress
+          rawCampaign: camp
         };
       }).filter(match => match.ID !== "");
       return matches;

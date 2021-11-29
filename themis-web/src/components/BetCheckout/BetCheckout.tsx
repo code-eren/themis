@@ -11,6 +11,7 @@ import { Match } from "../../interfaces/Match";
 import { finalize, setError, submit } from "../../redux/actions/BetCheckoutActions";
 import { Transaction } from "../../interfaces/Bet";
 import { toast } from "react-toastify";
+import { encodeTeamId } from '../../utils';
 
 export interface BetCheckoutProps {
     match: Match | null;
@@ -42,30 +43,24 @@ export function BetCheckout(props: BetCheckoutProps) {
         submit();
         let contractTeamId: number = -1;
         if (props.match !== null) {
-            if (props.match.home.team.ID === teamId) {
-                contractTeamId = 0;
-            } else if (props.match.away.team.ID === teamId) {
-                contractTeamId = 1;
-            } else if (props.match.tie.team.ID === teamId) {
-                contractTeamId = 2;
-            }
+            contractTeamId = encodeTeamId(props.match, teamId);
         }
 
         if (web3 === null || user === null) {
             toast("Please connect wallet.");
         } else {
-            const contract = new web3.eth.Contract(campaignContract.abi, campaignContract.contractAddress);
-            let contractTx = campaignContract.betterBid(amount, user.get('ethAddress'));
-            web3.eth.estimateGas(contractTx).then((gasEstimate: number) => {
-                console.log(gasEstimate)
-                contract.methods.bid(teamId).send({
-                    ...contractTx,
-                    gas: gasEstimate + 450000
-                }).then(console.log, (error: any) => setError(error["message"]))
-            })
+            // const contract = new web3.eth.Contract(campaignContract.abi, campaignContract.contractAddress);
+            // let contractTx = campaignContract.betterBid(amount, user.get('ethAddress'));
+            // web3.eth.estimateGas(contractTx).then((gasEstimate: any) => {
+            //     console.log(gasEstimate)
+            //     console.log(typeof gasEstimate)
+            //     contract.methods.bid(contractTeamId).send({
+            //         ...contractTx,
+            //         gas: gasEstimate + 450000
+            //     }).then(console.log, (error: any) => setError(error["message"]))
+            // })
+            fetch(campaignContract.bidParams(contractTeamId, amount));
         }
-
-        fetch(campaignContract.bidParams(teamId, amount));
     }
 
     const renderStepperPage = (step: number) => {

@@ -14,6 +14,15 @@ export const initialState: UserBetsState = cachedState === undefined ? {
 export const reducer = (state=initialState, action: UserBetsAction): UserBetsState => {
     switch (action.type) {
         case UserBetsActionTypes.ADD_BET: {
+            if (state.betsMade === undefined) {
+                state.betsMade = [];
+            }
+            console.log(action.bet);
+            // de-dupe
+            if (state.betsMade.filter((bet)=> bet.transaction.transactionHash === action.bet.transaction.transactionHash).length > 0) {
+                console.log("found dupe")
+                return state;
+            }
             const betsMade = state.betsMade.slice();
             betsMade.push(action.bet);
             return {

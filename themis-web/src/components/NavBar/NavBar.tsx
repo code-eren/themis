@@ -15,7 +15,11 @@ export function NavBar() {
         {
             path: "/bets",
             name: "My Bets"
-        }
+        },
+        {
+            path: "/trends",
+            name: "Trends"
+        },
     ]
     
     const handleLogin = () => {
@@ -28,9 +32,10 @@ export function NavBar() {
 
     return (
         <AppBar position="sticky">
-            <Toolbar>
+            <Toolbar
+            >
                 <Typography variant="h6" sx={{flexGrow: 1}}>Themis</Typography>
-                <Stack spacing={2} direction="row">
+                <Stack spacing={2} direction="row" alignItems="center" justifyContent="center">
                 {
                     routes.map(
                         (route) => {
@@ -48,10 +53,10 @@ export function NavBar() {
                 }
                 {
                     !isAuthenticated ?
-                    <Typography variant="inherit" color="inherit" sx={{cursor: "pointer"}} onClick={handleLogin}>
+                    <Typography variant="inherit" bgcolor="white" color="#1976d2" sx={{cursor: "pointer", padding: '10px', borderRadius: '10px'}} onClick={handleLogin}>
                         CONNECT WALLET
                     </Typography> :
-                    <Typography variant="inherit" color="inherit" sx={{cursor: "pointer"}} onClick={handleLogout}>
+                    <Typography variant="inherit" bgcolor="white" color="#1976d2" sx={{cursor: "pointer", padding: '10px', borderRadius: '10px'}} onClick={handleLogout}>
                         DISCONNECT WALLET
                     </Typography>
                 }

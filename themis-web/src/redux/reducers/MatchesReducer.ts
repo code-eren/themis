@@ -16,7 +16,9 @@ export const reducer = (state:MatchesState=initialState, action: MatchesAction):
         case MatchActionType.SET_MATCHES: {
             return {
                 ...state,
-                matches: action.matches,
+                matches: action.matches.sort(
+                    (a, b) => b.startTimestamp - a.startTimestamp
+                ),
                 error: ""
             };
         }

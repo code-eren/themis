@@ -34,7 +34,6 @@ export function MatchesTable(props: MatchesTableProps) {
             props.onMatchClicked(match.ID);
         }
     };
-    console.log(props.matchContracts);
     return (
         <Table>
             <TableHead>
@@ -56,6 +55,15 @@ export function MatchesTable(props: MatchesTableProps) {
                     props.matchContracts.map((matchContracts) => {
                         const match = matchContracts.match;
                         const contract = matchContracts.contract;
+                        let keeperCellResult = <Checkbox
+                            disableRipple
+                            checked={true}
+                            checkedIcon={<Close />} 
+                            color={"error"} 
+                        />;
+                        if (match.isKeeperRegistered && match.rawCampaign !== undefined && match.rawCampaign?.Campaign_KeeperAddress !== null) {
+                            keeperCellResult = <ExternalLink href={match.rawCampaign.Campaign_KeeperAddress} label="Chainlink" />
+                        }
                         return (
                             <TableRow sx={{cursor: "pointer"}} hover={true} onClick={() => handleTableRowClicked(match, contract)}>
                                 <TableCell>{match.ID}</TableCell>
@@ -69,12 +77,9 @@ export function MatchesTable(props: MatchesTableProps) {
                                     <ExternalLink label="Etherscan" href={etherscanKovan.contractUrl+match.contractAddress} />
                                 </TableCell>
                                 <TableCell>
-                                    <Checkbox
-                                        disableRipple
-                                        checked={true}
-                                        checkedIcon={match.isKeeperRegistered ? <Check /> : <Close />} 
-                                        color={match.isKeeperRegistered ? "success" : "error"} 
-                                    />
+                                    {
+                                        keeperCellResult
+                                    }
                                 </TableCell>
                                 <TableCell>
                                     <Checkbox

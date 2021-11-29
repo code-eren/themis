@@ -13,6 +13,8 @@ import { ExternalLink } from '../ExternalLink/ExternalLink';
 import { etherscanKovan } from '../../etherscan/constants';
 import { CampaignContractProperties } from '../../interfaces/CampaignContract';
 import { CampaignContract } from '../../web3/campaign';
+import { store } from '../../storage/redux-store';
+import { teamIdToTeamName } from '../../utils';
 
 export interface BetsTableProps {
     betsMade: BetMade[];
@@ -21,6 +23,8 @@ export interface BetsTableProps {
 
 export function BetsTable(props: BetsTableProps) {
     const { fetch } = useWeb3ExecuteFunction();
+
+    const matches = store.getState().matches.matches;
 
     const claimWinnings = (betMade: BetMade, won: boolean) => () => {
         if (won) {
@@ -58,6 +62,11 @@ export function BetsTable(props: BetsTableProps) {
                     chipProps.color = undefined;
                 } else if (cp.winnerTeamId.value === betMade.bet.teamID) {
                     chipProps.label = "Won - Unclaimed";
+                    if (betMade.claimable === true) {
+                        chipProps.label += " - Unclaimed";
+                    } else if (betMade.claimable === false) {
+                        chipProps.label += " - Claimed";
+                    }
                     chipProps.color = "success";
                 } else {
                     chipProps.label = "Lost";
@@ -91,11 +100,12 @@ export function BetsTable(props: BetsTableProps) {
                 </TableHead>
                 <TableBody>
                     {
-                        props.betsMade.map((betMade) => {
+                        props.betsMade && props.betsMade.map((betMade) => {
+                            let match = matches.find(m => m.ID === betMade.bet.matchID);
                             return (
                                 <TableRow>
                                     <TableCell>{betMade.bet.matchID}</TableCell>
-                                    <TableCell>{betMade.bet.teamID}</TableCell>
+                                    <TableCell>{teamIdToTeamName(betMade.bet.teamID, match)}</TableCell>
                                     <TableCell>{betMade.bet.bidAmount}</TableCell>
                                     <TableCell>
                                         <ExternalLink

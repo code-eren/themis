@@ -1,3 +1,4 @@
+import { LogsState } from '../../interfaces/LogsState';
 import { CampaignContractsState } from './../../interfaces/CampaignContractsState';
 import { AddBetAction } from './../actions/UserBetsActions';
 import { BetCheckoutActionTypes } from '../constants/BetCheckoutActionTypes';
@@ -5,6 +6,7 @@ import * as betCheckout from './BetCheckoutReducer';
 import * as userBets from './UserBetsReducer';
 import * as matches from './MatchesReducer';
 import * as contracts from './CampaignContractsReducer';
+import * as logs from './LogReducer';
 import { BetCheckoutState } from '../../interfaces/BetCheckoutState';
 import { UserBetsState } from '../../interfaces/UserBetsState';
 import { MatchesState } from '../../interfaces/MatchesState';
@@ -15,6 +17,7 @@ export interface RootState {
     userBets: UserBetsState;
     matches: MatchesState;
     contractsState: CampaignContractsState;
+    logsState: LogsState;
 }
 
 export default (
@@ -22,7 +25,8 @@ export default (
         betCheckout: betCheckout.initialState,
         userBets: userBets.initialState,
         matches: matches.initialState,
-        contractsState: contracts.initialState
+        contractsState: contracts.initialState,
+        logsState: logs.initialState,
     },
     action: any
 ): RootState => {
@@ -39,7 +43,8 @@ export default (
                 betCheckout: betCheckout.reducer(state.betCheckout, action),
                 userBets: userBets.reducer(state.userBets, addBetAction),
                 matches: matches.reducer(state.matches, action),
-                contractsState: contracts.reducer(state.contractsState, action)
+                contractsState: contracts.reducer(state.contractsState, action),
+                logsState: logs.reducer(state.logsState, action)
             }
         }
         default: {
@@ -47,7 +52,8 @@ export default (
                 betCheckout: betCheckout.reducer(state.betCheckout, action),
                 userBets: userBets.reducer(state.userBets, action),
                 matches: matches.reducer(state.matches, action),
-                contractsState: contracts.reducer(state.contractsState, action)
+                contractsState: contracts.reducer(state.contractsState, action),
+                logsState: logs.reducer(state.logsState, action)
             }
         }
     }

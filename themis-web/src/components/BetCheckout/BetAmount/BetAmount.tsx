@@ -34,7 +34,6 @@ export function BetAmount (props: BetAmountProps) {
             let team = teamOdds.team.fullName == "Tie" ? "a tie" : teamOdds.team.fullName;
             let odds = convertOddsToString(teamOdds.odds);
             let winnings = getWinnings(amountParsed, teamOdds.odds);
-            console.log(winnings);
             let message = `Since you bet on ${team} (${odds}), your winnings would be ${winnings} ETH.`;
             return <Typography textAlign="center">{message}</Typography>;
         }

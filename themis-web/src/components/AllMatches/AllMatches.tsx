@@ -38,7 +38,7 @@ export function AllMatches(props: AllMatchesProps) {
         result = <HTTPError message={props.matchesState.error} />;
     }
     return (
-        <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
+        <Container component="main" maxWidth="lg" sx={{ mb: 4 }}>
             <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
                 <Typography component="h1" variant="h4" align="center" marginBottom="10px">
                     Matches

@@ -26,7 +26,7 @@ export class CampaignContract extends Contract {
         super(campaign["abi"], contractAddress);
     }
 
-    bidParams(_teamId: string, amount: string): MoralisFetchParams {
+    bidParams(_teamId: number, amount: string): MoralisFetchParams {
         return {
             params: {
                 ...this.metadata(),
@@ -82,7 +82,6 @@ export class CampaignContract extends Contract {
                 }
             },
             onError: (error: any) => {
-                console.log(error);
                 this._updateIsFulfilledProperty(false, error["message"]);
             }
         };
@@ -110,7 +109,6 @@ export class CampaignContract extends Contract {
                 functionName: "winnedTeamId"
             },
             onSuccess: (winner: unknown) => {
-                console.log("success")
                 if (typeof winner === "number") {
                     this._updateWinnerTeamIdProperty(false, "", winner.toString());
                 } else {
@@ -118,7 +116,6 @@ export class CampaignContract extends Contract {
                 }
             },
             onError: (error: any) => {
-                console.log(error);
                 this._updateWinnerTeamIdProperty(false, error["message"])
             } 
         }
@@ -137,20 +134,23 @@ export class CampaignContract extends Contract {
         }]);
     }
 
-    addressToBidderParams(): MoralisFetchParams {
+    addressToBidderParams(addr: string): MoralisFetchParams {
         // set loading to true before contract calls and when complete set to false
         this._updateAddressToBidderProperty(true, "");
         return {
             params: {
                 ...this.metadata(),
-                functionName: "addr2bidder"
+                functionName: "addr2bidder",
+                params: {
+                    input: addr
+                }
             },
             onSuccess: (data: unknown) => {
-                console.log(data);
+                console.log(data)
                 this._updateAddressToBidderProperty(false, "", data);
             },
             onError: (error: any) => {
-                console.log(error);
+                console.log(error)
                 this._updateAddressToBidderProperty(false, error["message"])
             } 
         }
@@ -169,11 +169,11 @@ export class CampaignContract extends Contract {
         }]);
     }
 
-    allPropsParams() {
+    allPropsParams(addr: string) {
         return [
             this.isFulfilledParams(),
-            this.addressToBidderParams(),
-            this.addressToBidderParams()
+            this.addressToBidderParams(addr),
+            this.winnerParams(),
         ];
     }
 }
